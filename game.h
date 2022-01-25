@@ -5,6 +5,7 @@
 #include <stdlib.h> //NULL
 #include <time.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 #define WINDOW_HEIGHT 35
 #define WINDOW_WIDTH 96
@@ -74,6 +75,7 @@ typedef struct {
   int number;
   int coins_found;
   int coins_brought;
+  sem_t sem_print_map;
 
 } Player_t;
 

@@ -71,6 +71,8 @@ void * get_key(void * arg){
 
 void * show_map(void * arg){
   while(1){
+    sem_wait(&(Shm_game->Players[__index__].sem_print_map));
+    clear_map(&player_window);
     render_map(Shm_game->Players + __index__, &player_window, Shm_game->round);
   }
 }

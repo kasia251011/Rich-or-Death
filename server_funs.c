@@ -240,6 +240,8 @@ void players_init(Player_t * players){
     players[i].coins_found = 0;
     players[i].number = i+1;
 
+    sem_init(&(players[i].sem_print_map), 1, 1);
+
   }
 }
 

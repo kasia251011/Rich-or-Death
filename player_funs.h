@@ -8,5 +8,6 @@
 
 int get_player_index(Player_t * Players);
 void render_map(Player_t * Player, Window_t * Window, int round);
+void clear_map(Window_t * Window);
 
 #endif

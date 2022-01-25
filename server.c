@@ -21,10 +21,8 @@ int main(){
   key_t KEY_SHM = 123;
   int shm_id = shmget(KEY_SHM, sizeof(Shm_game_t), IPC_CREAT | 0666);
   Shm_game = (Shm_game_t *)shmat(shm_id, NULL, 0);
-  
 
   Shm_game->round = 0;
-  
 
   screen_init();
   window_init(&server_window);
@@ -41,6 +39,10 @@ int main(){
   pthread_join(execute_action_thread, NULL);
 
   screen_destroy();
+
+  for(int i = 0; i < PLAYERS_MAX; i++){
+    sem_destroy(&Shm_game->Players[i].sem_print_map);
+  }
 
   shmdt(Shm_game);
   shmctl(shm_id, IPC_RMID, NULL);
@@ -97,6 +99,8 @@ void * execute_action(void * arg){
     for(int i = 0; i < PLAYERS_MAX; i++){
       if(Shm_game->Players[i].pid > 0 ){
         send_map_to_player(&(Shm_game->Players[i]));
+        sem_post(&(Shm_game->Players[i].sem_print_map));
+        
       }
     }
     

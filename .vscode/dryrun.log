@@ -1,0 +1,5 @@
+make: Entering directory '/home/kasia/Pulpit/projekt 3/Rich-or-Death'
+gcc server.c game.c server_funs.c -pthread -o server -lncurses
+gcc game.c player.c player_funs.c -pthread -o player -lncurses
+make: Leaving directory '/home/kasia/Pulpit/projekt 3/Rich-or-Death'
+ 

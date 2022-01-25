@@ -56,3 +56,11 @@ void render_map(Player_t * Player, Window_t * Window, int round){
   wrefresh(Window->stats);
 
 }
+
+void clear_map(Window_t * Window){
+  for(int i = 0; i < BOARD_HEIGHT; i++){
+    for(int j = 0; j < BOARD_WIDTH; j++){
+      mvwaddch(Window->board, i, j, ' ');
+    }
+  }
+}
