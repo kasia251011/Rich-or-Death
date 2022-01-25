@@ -5,6 +5,8 @@
 #include <stdlib.h> //NULL
 #include <time.h>
 #include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #define WINDOW_HEIGHT 35
 #define WINDOW_WIDTH 96
@@ -55,7 +57,7 @@ typedef struct {
 
 
 
-typedef enum {ACTION_ONE_COIN = 'c', QUIT = 'q', NO_ACTION, ACTION_TREASURE = 't', ACTION_LARGE_TREASURE = 'T'} Action_id_t ;
+typedef enum {ACTION_ONE_COIN = 'c', QUIT = 'q', NO_ACTION = 0, ACTION_TREASURE = 't', ACTION_LARGE_TREASURE = 'T'} Action_id_t ;
 
 typedef struct {
   int id;
@@ -74,16 +76,10 @@ typedef struct {
   int number;
   int coins_found;
   int coins_brought;
-
+  int * round;
 } Player_t;
 
-
-
-
-typedef struct{
-  Player_t Players[PLAYERS_MAX];
-  int round;
-} Shm_game_t;
+typedef enum {ACTIVE, EMPTY} Status_player_t;
 
 
 

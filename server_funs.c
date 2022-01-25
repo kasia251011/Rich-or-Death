@@ -2,6 +2,33 @@
 
 Blocks_t Blocks;
 char __board_str__[BOARD_HEIGHT][BOARD_WIDTH];
+int __shm_players_id__[PLAYERS_MAX];
+int __shm_menager_id__;
+
+void load_shm(Player_t ** Players, int ** Menager){
+  key_t players_key[] = {1, 2, 3, 4};
+
+  for(int i = 0; i < PLAYERS_MAX; i++){
+    __shm_players_id__[i] = shmget(players_key[i], sizeof(Player_t), IPC_CREAT | 0666);
+    Players[i] = (Player_t *)shmat(__shm_players_id__[i], NULL, 0);
+  }
+
+  key_t menager_key = 1234;
+  __shm_menager_id__ = shmget(menager_key, sizeof(int) * PLAYERS_MAX, IPC_CREAT | 0666);
+
+  *Menager = (int *)shmat(__shm_menager_id__, NULL, 0);
+
+  for(int i = 0; i < PLAYERS_MAX; i++){
+    *(*Menager + i) = EMPTY;
+  }
+}
+
+void close_shm(Player_t ** Players, int * Menager){
+  for(int i = 0; i < PLAYERS_MAX; i++){
+    shmdt(Players[i]);
+    shmctl(__shm_players_id__[i], IPC_RMID, NULL);
+  }
+}
 
 void random_filed(Coordinates_t * coords){
   srand(time(NULL));
@@ -37,7 +64,7 @@ void board_init(){
 
 }
 
-void refresh_server(Window_t * Window, Player_t * Players, int round){
+void refresh_server(Window_t * Window, Player_t ** Players){
 
   blocks_init(&Blocks);
   chtype block;
@@ -73,34 +100,34 @@ void refresh_server(Window_t * Window, Player_t * Players, int round){
   wrefresh(Window->board);
 
   //stats
-  mvwprintw(Window->stats, 3, 2, "Round number: %d", round);
+  mvwprintw(Window->stats, 3, 2, "Round number: %d", *(Players[0]->round));
   mvwprintw(Window->stats, 5, 1, "Parameter:  Player1  Player2  Player3  Player4");
 
   for(int i = 0, x = 0; i < PLAYERS_MAX; i++, x+=9){
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 6, 13 + x, "%d", Players[i].pid);
+    if(Players[i]->pid != NO_PROCESS){
+      mvwprintw(Window->stats, 6, 13 + x, "%d", Players[i]->pid);
     }else{
       mvwprintw(Window->stats, 6, 13+ x, "-      ");
     }
 
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 7, 13+ x, "%02d/%02d", Players[i].coords.x,Players[i].coords.y);
+    if(Players[i]->pid != NO_PROCESS){
+      mvwprintw(Window->stats, 7, 13+ x, "%02d/%02d", Players[i]->coords.x,Players[i]->coords.y);
     }else{
       mvwprintw(Window->stats, 7, 13+ x, "--/--  ");
     }
 
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 8, 13+ x, "%d", Players[i].deaths);
+    if(Players[i]->pid != NO_PROCESS){
+      mvwprintw(Window->stats, 8, 13+ x, "%d", Players[i]->deaths);
     }else{
       mvwprintw(Window->stats, 8, 13+ x, "-  ");
     }
 
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 11, 13+ x, "%d", Players[i].coins_found);
+    if(Players[i]->pid != NO_PROCESS){
+      mvwprintw(Window->stats, 11, 13+ x, "%d", Players[i]->coins_found);
     }
 
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 12, 13+ x, "%d", Players[i].coins_brought);
+    if(Players[i]->pid != NO_PROCESS){
+      mvwprintw(Window->stats, 12, 13+ x, "%d", Players[i]->coins_brought);
     }
 
   }
@@ -114,10 +141,11 @@ void refresh_server(Window_t * Window, Player_t * Players, int round){
   mvwprintw(Window->stats, 12, 1, "   brought ");
 
   wrefresh(Window->stats);
+  wrefresh(Window->terminal);
 
 }
 
-void select_action_server(Action_id_t action_id, Window_t * Window){
+void select_action_server(int action_id, Window_t * Window){
   blocks_init(&Blocks);
 
   switch (action_id){
@@ -223,22 +251,23 @@ void move_down(Player_t * Player, Window_t * Window){
   __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
 }
 
-void players_init(Player_t * players){
+void players_init(Player_t ** Players, int * round){
 
   for(int i = 0; i < PLAYERS_MAX; i++){
-    players[i].action_id = NO_ACTION;
-    players[i].pid = NO_PROCESS;
-    players[i].icon = i + 1 + '0';
-    players[i].block_before = '.';
+    Players[i]->action_id = NO_ACTION;
+    Players[i]->pid = NO_PROCESS;
+    Players[i]->icon = i + 1 + '0';
+    Players[i]->block_before = '.';
+    Players[i]->round = round;
     
-    random_filed(&(players[i].coords_spawn));
+    random_filed(&(Players[i]->coords_spawn));
 
-    players[i].coords.x = players[i].coords_spawn.x; 
-    players[i].coords.y = players[i].coords_spawn.y;
+    Players[i]->coords.x = Players[i]->coords_spawn.x; 
+    Players[i]->coords.y = Players[i]->coords_spawn.y;
 
-    players[i].coins_brought = 0;
-    players[i].coins_found = 0;
-    players[i].number = i+1;
+    Players[i]->coins_brought = 0;
+    Players[i]->coins_found = 0;
+    Players[i]->number = i+1;
 
   }
 }

@@ -1,14 +1,45 @@
 #include "player_funs.h"
 
-int get_player_index(Player_t * Players){
-  for(int i = 0; i < PLAYERS_MAX; i++){
-    if(Players[i].pid == NO_PROCESS) return i;
-  }
+int shm_load_menager(int ** Menager){
+  key_t key = 1234;
+  int shm_menager_id = shmget(key, sizeof(int) * PLAYERS_MAX, 0666);
+  
+  if(errno == ENOENT) return 1;
+  printf("1. %p\n", *Menager);
+  *Menager = (int *)shmat(shm_menager_id, NULL, 0);
+  printf("2. %p\n", *Menager);
+  
 
-  return -1;
+  return 0;
 }
 
-void render_map(Player_t * Player, Window_t * Window, int round){
+int get_player_key(int * Menager){
+  for(int i = 0; i < PLAYERS_MAX; i++){
+    if(Menager[i] == EMPTY){
+      Menager[i] = ACTIVE;
+      return i;
+    }
+  }
+
+  return 0;
+}
+
+int shm_load_player(Player_t ** Player, int * Menager){
+  key_t key = get_player_key(Menager);
+  if(key == -1) return 1;
+
+  int shm_player_id = shmget(key, sizeof(Player_t), 0666);
+  *Player = (Player_t *)shmat(shm_player_id, NULL, 0);
+
+  return 0;
+}
+
+void shm_close(Player_t * Player, int * Menager){
+  shmdt(Player);
+  shmdt(Menager);
+}
+
+void render_map(Player_t * Player, Window_t * Window){
   Blocks_t Blocks;
   blocks_init(&Blocks);
   chtype block;
@@ -44,7 +75,7 @@ void render_map(Player_t * Player, Window_t * Window, int round){
 
   wrefresh(Window->board);
 
-  mvwprintw(Window->stats, 3, 2, "Round number: %d", round);
+  mvwprintw(Window->stats, 3, 2, "Round number: %d", Player->round);
   mvwprintw(Window->stats, 5, 1, "Player:");
   mvwprintw(Window->stats, 6, 2, "Number:        %d", Player->number);
   mvwprintw(Window->stats, 7, 2, "Curr X/Y       %02d/%02d", Player->coords.x, Player->coords.y);

@@ -1,108 +1,102 @@
 #include <unistd.h> //sleep
-#include <sys/ipc.h>
-#include <sys/shm.h>
+
 #include <pthread.h>
 #include <signal.h>
 #include <errno.h>
 #include <string.h>
 #include "server_funs.h"
 
-Shm_game_t * Shm_game = NULL;
+Player_t * __Players__[PLAYERS_MAX];
+int * __menager__;
 
-void * get_key(void * arg);
-void * execute_action(void * arg);
+void * exe_server_action(void * arg);
+void * exe_players_action(void * arg);
 
 Window_t server_window;
-Action_id_t server_action_id = NO_ACTION;
+int __server_ation_id__ = NO_ACTION;
+int __round__ = 0;
 
 int main(){
 
-  //GET PLAYER FROM SHM
-  key_t KEY_SHM = 123;
-  int shm_id = shmget(KEY_SHM, sizeof(Shm_game_t), IPC_CREAT | 0666);
-  Shm_game = (Shm_game_t *)shmat(shm_id, NULL, 0);
-  
-
-  Shm_game->round = 0;
-  
+  load_shm(__Players__, &__menager__);
 
   screen_init();
   window_init(&server_window);
   board_init();
   keypad(server_window.input, true);
-  players_init(Shm_game->Players);
 
-  pthread_t get_key_thread, execute_action_thread;
+  players_init(__Players__, &__round__);
 
-  pthread_create(&get_key_thread, NULL, get_key, NULL);
-  pthread_create(&execute_action_thread, NULL, execute_action, NULL);
+  
 
-  pthread_join(get_key_thread, NULL);
-  pthread_join(execute_action_thread, NULL);
+  pthread_t exe_server_action_thread, exe_players_action_thread;
+
+  pthread_create(&exe_server_action_thread, NULL, exe_server_action, NULL);
+  pthread_create(&exe_players_action_thread, NULL, exe_players_action, NULL);
+
+  pthread_join(exe_server_action_thread, NULL);
+  pthread_join(exe_players_action_thread, NULL);
 
   screen_destroy();
 
-  shmdt(Shm_game);
-  shmctl(shm_id, IPC_RMID, NULL);
+  close_shm(__Players__, __menager__);
   
   return 0;
 }
 
 
 
-void * get_key(void * arg){
-  char action;
+void * exe_server_action(void * arg){
 
   while(1){
-    server_action_id = mvwgetch(server_window.input, 1, 1);
-    if(server_action_id == QUIT) return NULL;
+    __server_ation_id__ = mvwgetch(server_window.input, 1, 1);
+    select_action_server(__server_ation_id__, &server_window);
+    refresh_server(&server_window, __Players__);
+    if(__server_ation_id__ == QUIT) return NULL;
   }
 
   return NULL;
 }
 
-void * execute_action(void * arg){
+
+void * exe_players_action(void * arg){
 
   while (1){
 
-    select_action_server(server_action_id, &server_window);
-
     for(int i = 0; i < PLAYERS_MAX; i++){
+      if(kill(__Players__[i]->pid, 0) != 0){
 
-      if(kill(Shm_game->Players[i].pid, 0) != 0){
-        if(Shm_game->Players[i].pid != NO_PROCESS){
-          delete_player(Shm_game->Players + i, i);
+        //if process was already killed controled or no controled
+        if(__Players__[i]->pid != NO_PROCESS){
+          delete_player(__Players__[i], i);
+          __menager__[i] = EMPTY;
         }
       }
 
-      select_action_player(Shm_game->Players + i , &server_window);
+      select_action_player(__Players__[i], &server_window);
     }
 
-    if(server_action_id == QUIT) {
+    if(__server_ation_id__ == QUIT) {
       wrefresh(server_window.terminal);
       return NULL;
     }
 
-    server_action_id = NO_ACTION;
+    __server_ation_id__ = NO_ACTION;
     for(int i = 0; i < PLAYERS_MAX; i++){
-      Shm_game->Players[i].action_id = NO_ACTION;
+      __Players__[i]->action_id = NO_ACTION;
     }
 
-    wrefresh(server_window.board);
-    wrefresh(server_window.terminal);
-    wrefresh(server_window.stats);
-
-    refresh_server(&server_window, Shm_game->Players, Shm_game->round);
+    refresh_server(&server_window, __Players__);
 
     for(int i = 0; i < PLAYERS_MAX; i++){
-      if(Shm_game->Players[i].pid > 0 ){
-        send_map_to_player(&(Shm_game->Players[i]));
+      if(__Players__[i]->pid > 0 ){
+        send_map_to_player(__Players__[i]);
       }
     }
     
     
-    sleep(1);
-    Shm_game->round++;
+    usleep(500000);
+    __round__++;
   }
   
 }
