@@ -1,8 +1,11 @@
 #include "server_funs.h"
 
 Blocks_t Blocks;
+Beast_t __Beasts__[BEAST_MAX];
 char __board_str__[BOARD_HEIGHT][BOARD_WIDTH];
 int __dropped_treasure__[BOARD_HEIGHT][BOARD_WIDTH];
+int __beast_counter__ = 0;
+
 
 void random_filed(Coordinates_t * coords){
   srand(time(NULL));
@@ -137,6 +140,15 @@ void select_action_server(Action_id_t action_id, Window_t * Window){
       mvwprintw(Window->terminal, 1, 1, "Added Large Treasure");
       add_coin(ACTION_LARGE_TREASURE);
       break;
+    case ACTION_BEAST:
+
+      /*if(__beast_counter__ == 4) break;
+        random_filed(&(__Beasts__[__beast_counter__].coords));
+        pthread_create(&(__Beasts__[__beast_counter__].thread), NULL, beast_move, &__beast_counter__);
+
+        __beast_counter__++;*/      
+
+      break;
     default:
       break;
   }
@@ -161,16 +173,16 @@ void select_action_player(Player_t * Player, Window_t * Window){
     case QUIT:
       break;
     case KEY_RIGHT:
-      move_right(Player, Window);
+      move_right(Player);
       break;
     case KEY_LEFT:
-      move_left(Player, Window);
+      move_left(Player);
       break;
     case KEY_UP:
-      move_up(Player, Window);
+      move_up(Player);
       break;
     case KEY_DOWN:
-      move_down(Player, Window);
+      move_down(Player);
       break;
     case NO_ACTION:
        __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
@@ -180,7 +192,7 @@ void select_action_player(Player_t * Player, Window_t * Window){
   }
 }
 
-void move_right(Player_t * Player, Window_t * Window){
+void move_right(Player_t * Player){
   int way = 1;
 
   switch (__board_str__[Player->coords.y][Player->coords.x + 1] ){
@@ -224,7 +236,7 @@ void move_right(Player_t * Player, Window_t * Window){
   __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
 }
 
-void move_left(Player_t * Player, Window_t * Window){
+void move_left(Player_t * Player){
   int way = 1;
 
   switch (__board_str__[Player->coords.y][Player->coords.x - 1] ){
@@ -267,7 +279,7 @@ void move_left(Player_t * Player, Window_t * Window){
   __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
 }
 
-void move_up(Player_t * Player, Window_t * Window){
+void move_up(Player_t * Player){
   int way = 1;
 
   switch (__board_str__[Player->coords.y - 1][Player->coords.x] ){
@@ -310,7 +322,7 @@ void move_up(Player_t * Player, Window_t * Window){
   __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
 }
 
-void move_down(Player_t * Player, Window_t * Window){
+void move_down(Player_t * Player){
   int way = 1;
 
   switch (__board_str__[Player->coords.y + 1][Player->coords.x]){
@@ -335,6 +347,7 @@ void move_down(Player_t * Player, Window_t * Window){
   case '2':
   case '3':
   case '4':
+
     break;
   default:
     break;
@@ -401,3 +414,38 @@ void send_map_to_player(Player_t * Player){
     }
   }
 }
+
+/*void beast_move(Beast_t * Beast){
+
+  while(1){
+    Direction_t dir = rand() % 4;
+
+    switch (dir){
+      case UP: beast_move_up(Beast); break;
+      case DOWN: beast_move_down(Beast); break;
+      case RIGHT: beast_move_right(Beast); break;
+      case LEFT: beast_move_left(Beast); break;
+      
+      default:
+        break;
+    } 
+  }
+
+  
+
+}
+void beast_move_left(Beast_t * Beast){
+
+}
+
+void beast_move_right(Beast_t * Beast){
+
+}
+
+void beast_move_up(Beast_t * Beast){
+
+}
+
+void beast_move_down(Beast_t * Beast){
+
+}*/

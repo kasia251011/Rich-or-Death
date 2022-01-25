@@ -56,7 +56,8 @@ typedef struct {
 
 
 
-typedef enum {ACTION_ONE_COIN = 'c', QUIT = 'q', NO_ACTION, ACTION_TREASURE = 't', ACTION_LARGE_TREASURE = 'T'} Action_id_t ;
+typedef enum {ACTION_ONE_COIN = 'c', QUIT = 'q', NO_ACTION, ACTION_TREASURE = 't', ACTION_LARGE_TREASURE = 'T', ACTION_BEAST = 'b'} Action_id_t ;
+typedef enum {LEFT, RIGHT, UP, DOWN} Direction_t;
 
 typedef struct {
   int id;
@@ -80,7 +81,10 @@ typedef struct {
 
 } Player_t;
 
-
+typedef struct {
+  pthread_t thread;
+  Coordinates_t coords;
+} Beast_t;
 
 
 typedef struct{

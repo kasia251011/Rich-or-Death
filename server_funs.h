@@ -1,6 +1,7 @@
 #ifndef _SERVER_H_
 #define _SERVER_H_
 
+#include <pthread.h>
 #include "game.h"
 
 void random_filed(Coordinates_t *);
@@ -17,13 +18,21 @@ void select_action_player(Player_t *, Window_t * Window);
 void add_coin(char type);
 
 //player actions
-void move_left(Player_t * Player, Window_t * Window);
-void move_right(Player_t * Player, Window_t * Window);
-void move_up(Player_t * Player, Window_t * Window);
-void move_down(Player_t * Player, Window_t * Window);
+void move_left(Player_t * Player);
+void move_right(Player_t * Player);
+void move_up(Player_t * Player);
+void move_down(Player_t * Player);
 
 void players_init(Player_t * Players);
 void delete_player(Player_t * Player, int index);
 void send_map_to_player(Player_t * Player);
+
+//beast actions
+void beast_move(Beast_t *);
+void beast_move_left(Beast_t *);
+void beast_move_right(Beast_t *);
+void beast_move_up(Beast_t *);
+void beast_move_down(Beast_t *);
+
 
 #endif
