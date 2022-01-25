@@ -1,4 +1,4 @@
-#include <unistd.h> //sleep
+
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <pthread.h>
@@ -23,6 +23,7 @@ int main(){
   Shm_game = (Shm_game_t *)shmat(shm_id, NULL, 0);
 
   Shm_game->round = 0;
+  Shm_game->server_pid = getpid();
 
   screen_init();
   window_init(&server_window);

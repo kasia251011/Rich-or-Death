@@ -85,6 +85,7 @@ typedef struct {
 typedef struct{
   Player_t Players[PLAYERS_MAX];
   int round;
+  pid_t server_pid;
 } Shm_game_t;
 
 

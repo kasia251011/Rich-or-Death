@@ -8,7 +8,7 @@ int get_player_index(Player_t * Players){
   return -1;
 }
 
-void render_map(Player_t * Player, Window_t * Window, int round){
+void render_map(Player_t * Player, Window_t * Window, int round, pid_t server_pid){
   Blocks_t Blocks;
   blocks_init(&Blocks);
   chtype block;
@@ -43,7 +43,7 @@ void render_map(Player_t * Player, Window_t * Window, int round){
   }
 
   wrefresh(Window->board);
-
+  mvwprintw(Window->stats, 1, 1, "Server's PID: %d", server_pid);
   mvwprintw(Window->stats, 3, 2, "Round number: %d", round);
   mvwprintw(Window->stats, 5, 1, "Player:");
   mvwprintw(Window->stats, 6, 2, "Number:        %d", Player->number);

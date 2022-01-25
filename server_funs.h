@@ -1,8 +1,6 @@
 #ifndef _SERVER_H_
 #define _SERVER_H_
 
-#include <stdlib.h>
-#include <unistd.h>
 #include "game.h"
 
 void random_filed(Coordinates_t *);

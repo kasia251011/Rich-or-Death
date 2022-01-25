@@ -1,8 +1,10 @@
-#include <unistd.h> //sleep
+
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <pthread.h>
 #include <errno.h>
+#include <signal.h>
+#include <string.h>
 
 #include "player_funs.h"
 
@@ -70,9 +72,22 @@ void * get_key(void * arg){
 }
 
 void * show_map(void * arg){
+  int i = 0;
+
   while(1){
+    //nie działa
+
+    if(kill(Shm_game->server_pid, 0) != 0){
+      mvwprintw(player_window.terminal, 1, 1, "Server nie istnieje");
+      wrefresh(player_window.terminal);
+      exit(1);
+    }
+
+    //
+
     sem_wait(&(Shm_game->Players[__index__].sem_print_map));
+
     clear_map(&player_window);
-    render_map(Shm_game->Players + __index__, &player_window, Shm_game->round);
+    render_map(Shm_game->Players + __index__, &player_window, Shm_game->round, Shm_game->server_pid);
   }
 }

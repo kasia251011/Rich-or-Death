@@ -73,6 +73,7 @@ void refresh_server(Window_t * Window, Player_t * Players, int round){
   wrefresh(Window->board);
 
   //stats
+  mvwprintw(Window->stats, 1, 1, "Server's PID: %d", getpid());
   mvwprintw(Window->stats, 3, 2, "Round number: %d", round);
   mvwprintw(Window->stats, 5, 1, "Parameter:  Player1  Player2  Player3  Player4");
 

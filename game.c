@@ -36,8 +36,6 @@ void window_init(Window_t * window){
   Blocks_t Blocks;
   blocks_init(&Blocks);
 
-  mvwprintw(window->stats, 1, 1, "Server's PID: %d", getpid());
-
   mvwprintw(window->stats, 14, 1, "Legend: ");
   for(int i = 0; i < PLAYERS_MAX; i++){
     mvwaddch(window->stats, 15, 2 + i, Blocks.Players[i]);
