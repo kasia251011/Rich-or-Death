@@ -88,6 +88,6 @@ void * show_map(void * arg){
     sem_wait(&(Shm_game->Players[__index__].sem_print_map));
 
     clear_map(&player_window);
-    render_map(Shm_game->Players + __index__, &player_window, Shm_game->round, Shm_game->server_pid);
+    render_map(Shm_game->Players + __index__, &player_window, Shm_game->round, Shm_game->server_pid, Shm_game->camp_coords);
   }
 }

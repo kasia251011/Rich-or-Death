@@ -76,6 +76,7 @@ typedef struct {
   int coins_found;
   int coins_brought;
   sem_t sem_print_map;
+  int in_bushes;
 
 } Player_t;
 
@@ -86,6 +87,7 @@ typedef struct{
   Player_t Players[PLAYERS_MAX];
   int round;
   pid_t server_pid;
+  Coordinates_t camp_coords;
 } Shm_game_t;
 
 

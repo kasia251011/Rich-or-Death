@@ -5,7 +5,7 @@
 
 void random_filed(Coordinates_t *);
 int load_board();
-void board_init();
+void board_init(Coordinates_t * camp_coords);
 void refresh_server(Window_t * Window, Player_t * players, int round);
 
 //switch

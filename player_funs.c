@@ -8,7 +8,7 @@ int get_player_index(Player_t * Players){
   return -1;
 }
 
-void render_map(Player_t * Player, Window_t * Window, int round, pid_t server_pid){
+void render_map(Player_t * Player, Window_t * Window, int round, pid_t server_pid, Coordinates_t camp_coords){
   Blocks_t Blocks;
   blocks_init(&Blocks);
   chtype block;
@@ -37,7 +37,7 @@ void render_map(Player_t * Player, Window_t * Window, int round, pid_t server_pi
       mvwaddch(Window->board, Player->coords.y + i - 2, Player->coords.x + j - 2, block);
 
       if(Player->view[i][j] == 'A'){
-        mvwprintw(Window->stats, 2, 1, " Campasite X/Y: %02d/%02d", j, i);
+        mvwprintw(Window->stats, 2, 1, " Campasite X/Y: %02d/%02d", camp_coords.x, camp_coords.y);
       }
     }
   }

@@ -27,7 +27,7 @@ int main(){
 
   screen_init();
   window_init(&server_window);
-  board_init();
+  board_init(&(Shm_game->camp_coords));
   keypad(server_window.input, true);
   players_init(Shm_game->Players);
 
@@ -106,7 +106,7 @@ void * execute_action(void * arg){
     }
     
     
-    sleep(1);
+    usleep(500000);
     Shm_game->round++;
   }
   

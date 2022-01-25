@@ -2,6 +2,7 @@
 
 Blocks_t Blocks;
 char __board_str__[BOARD_HEIGHT][BOARD_WIDTH];
+int __dropped_treasure__[BOARD_HEIGHT][BOARD_WIDTH];
 
 void random_filed(Coordinates_t * coords){
   srand(time(NULL));
@@ -27,13 +28,12 @@ int load_board(){
     return 0;
 }
 
-void board_init(){
+void board_init(Coordinates_t * camp_coords){
   load_board();
   
   //campasite
-  Coordinates_t campasite_coords;
-  random_filed(&campasite_coords);
-  __board_str__[campasite_coords.y][campasite_coords.x] = 'A';
+  random_filed(camp_coords);
+  __board_str__[camp_coords->y][camp_coords->x] = 'A';
 
 }
 
@@ -147,11 +147,15 @@ void add_coin(char type){
   
   Coordinates_t coords;
   random_filed(&coords);
-  __board_str__[coords.x][coords.y] = type;
+  __board_str__[coords.y][coords.x] = type;
 }
 
 void select_action_player(Player_t * Player, Window_t * Window){
   if(Player->pid == NO_PROCESS) return;
+  if(Player->in_bushes){
+    Player->in_bushes = 0;
+    return;
+  }
 
   switch (Player->action_id){
     case QUIT:
@@ -177,11 +181,43 @@ void select_action_player(Player_t * Player, Window_t * Window){
 }
 
 void move_right(Player_t * Player, Window_t * Window){
-  if(__board_str__[Player->coords.y][Player->coords.x + 1] != '.') return;
+  int way = 1;
+
+  switch (__board_str__[Player->coords.y][Player->coords.x + 1] ){
+  case '|': return;
+  case '#': Player->in_bushes = 1; break;
+  case 'c': Player->coins_found ++; way = 0; break;
+  case 't': Player->coins_found += 10; way = 0; break;
+  case 'T': Player->coins_found += 50; way = 0; break;
+  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y ][Player->coords.x + 1]; break;
+  case '*':
+    __board_str__[Player->coords.y][Player->coords.x + 1] = 'D';
+    __dropped_treasure__[Player->coords.y][Player->coords.x + 1] = Player->coins_found;
+    Player->coords.y = Player->coords_spawn.y;
+    Player->coords.x = Player->coords_spawn.x;
+    Player->coins_found = 0;
+    return;
+  case 'A': 
+    Player->coins_brought += Player->coins_found;
+    Player->coins_found = 0;
+    break;
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+    break;
+  default:
+    break;
+  }
 
   //path
+  
   __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
-  Player->block_before = __board_str__[Player->coords.y][Player->coords.x + 1];
+
+  if(way){
+    Player->block_before = __board_str__[Player->coords.y][Player->coords.x + 1];
+  }
+  
 
   Player->coords.x++;
 
@@ -189,11 +225,42 @@ void move_right(Player_t * Player, Window_t * Window){
 }
 
 void move_left(Player_t * Player, Window_t * Window){
-  if(__board_str__[Player->coords.y][Player->coords.x - 1] != '.') return;
+  int way = 1;
+
+  switch (__board_str__[Player->coords.y][Player->coords.x - 1] ){
+  case '|': return;
+  case '#': Player->in_bushes = 1; break;
+  case 'c': Player->coins_found ++; way = 0; break;
+  case 't': Player->coins_found += 10; way = 0; break;
+  case 'T': Player->coins_found += 50; way = 0; break;
+  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y][Player->coords.x - 1]; break;
+  case '*':
+    __board_str__[Player->coords.y][Player->coords.x - 1] = 'D';
+    __dropped_treasure__[Player->coords.y][Player->coords.x - 1] = Player->coins_found;
+    Player->coords.y = Player->coords_spawn.y;
+    Player->coords.x = Player->coords_spawn.x;
+    Player->coins_found = 0;
+    return;
+  case 'A': 
+    Player->coins_brought += Player->coins_found;
+    Player->coins_found = 0;
+    break;
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+    break;
+  default:
+    break;
+  }
 
   //path
+ 
   __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
-  Player->block_before = __board_str__[Player->coords.y][Player->coords.x - 1];
+  if(way){  
+    Player->block_before = __board_str__[Player->coords.y][Player->coords.x - 1];
+  }
+  
 
   Player->coords.x--;
 
@@ -201,11 +268,42 @@ void move_left(Player_t * Player, Window_t * Window){
 }
 
 void move_up(Player_t * Player, Window_t * Window){
-  if(__board_str__[Player->coords.y - 1][Player->coords.x] != '.') return;
+  int way = 1;
+
+  switch (__board_str__[Player->coords.y - 1][Player->coords.x] ){
+  case '|': return;
+  case '#': Player->in_bushes = 1; break;
+  case 'c': Player->coins_found ++; way = 0; break;
+  case 't': Player->coins_found += 10; way = 0; break;
+  case 'T': Player->coins_found += 50; way = 0; break;
+  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y - 1][Player->coords.x]; break;
+  case '*':
+    __board_str__[Player->coords.y - 1][Player->coords.x] = 'D';
+    __dropped_treasure__[Player->coords.y - 1][Player->coords.x] = Player->coins_found;
+    Player->coords.y = Player->coords_spawn.y;
+    Player->coords.x = Player->coords_spawn.x;
+    Player->coins_found = 0;
+    return;
+  case 'A': 
+    Player->coins_brought = Player->coins_found;
+    Player->coins_found += 0;
+    break;
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+    break;
+  default:
+    break;
+  }
 
   //path
+  
   __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
-  Player->block_before = __board_str__[Player->coords.y - 1][Player->coords.x];
+  if(way){  
+    Player->block_before = __board_str__[Player->coords.y - 1][Player->coords.x];
+  }
+  
 
   Player->coords.y--;
 
@@ -213,11 +311,42 @@ void move_up(Player_t * Player, Window_t * Window){
 }
 
 void move_down(Player_t * Player, Window_t * Window){
-  if(__board_str__[Player->coords.y + 1][Player->coords.x] != '.') return;
+  int way = 1;
+
+  switch (__board_str__[Player->coords.y + 1][Player->coords.x]){
+  case '|': return;
+  case '#': Player->in_bushes = 1; break;
+  case 'c': Player->coins_found ++; way = 0; break;
+  case 't': Player->coins_found += 10; way = 0; break;
+  case 'T': Player->coins_found += 50; way = 0; break;
+  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y + 1][Player->coords.x]; break;
+  case '*':
+    __board_str__[Player->coords.y + 1][Player->coords.x] = 'D';
+    __dropped_treasure__[Player->coords.y + 1][Player->coords.x] = Player->coins_found;
+    Player->coords.y = Player->coords_spawn.y;
+    Player->coords.x = Player->coords_spawn.x;
+    Player->coins_found = 0;
+    return;
+  case 'A': 
+    Player->coins_brought = Player->coins_found;
+    Player->coins_found += 0;
+    break;
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+    break;
+  default:
+    break;
+  }
 
   //path
   __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
-  Player->block_before = __board_str__[Player->coords.y + 1][Player->coords.x];
+
+  if(way){
+    Player->block_before = __board_str__[Player->coords.y + 1][Player->coords.x];
+  }
+  
 
   Player->coords.y++;
 
@@ -240,6 +369,7 @@ void players_init(Player_t * players){
     players[i].coins_brought = 0;
     players[i].coins_found = 0;
     players[i].number = i+1;
+    players[i].in_bushes = 0;
 
     sem_init(&(players[i].sem_print_map), 1, 1);
 
