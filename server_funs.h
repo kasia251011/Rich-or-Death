@@ -23,24 +23,15 @@ void select_action_player(Player_t *);
 void add_coin(char type);
 
 //player actions
-void move_left(Player_t * Player);
-void move_right(Player_t * Player);
-void move_up(Player_t * Player);
-void move_down(Player_t * Player);
-
+void player_move(Player_t *, int y, int x);
 void players_init(Player_t * Players);
 void delete_player(Player_t * Player, int index);
 void send_map_to_player(Player_t * Player);
 
 //beast actions
 void beast_init();
-
-void * beast_move(void *);
-void beast_move_left(Beast_t *);
-void beast_move_right(Beast_t *);
-void beast_move_up(Beast_t *);
-void beast_move_down(Beast_t *);
-
+void * beast_select_move(void *);
+void beast_move(Beast_t *, int y, int x);
 void push_beasts();
 
 

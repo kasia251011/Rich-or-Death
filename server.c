@@ -22,30 +22,33 @@ int main(){
   key_t KEY_SHM = 123;
   int shm_id = shmget(KEY_SHM, sizeof(Shm_game_t), IPC_CREAT | 0666);
   __Shm_game__ = (Shm_game_t *)shmat(shm_id, NULL, 0);
-
   __Shm_game__->round = 0;
   __Shm_game__->server_pid = getpid();
 
+  //init game
   screen_init();
   window_init(&__Window__);
   board_init(&(__Shm_game__->camp_coords));
-  
   players_init(__Shm_game__->Players);
 
   pthread_t get_key_thread, execute_action_thread;
 
+  //game
   pthread_create(&get_key_thread, NULL, get_key, NULL);
   pthread_create(&execute_action_thread, NULL, execute_action, NULL);
 
   pthread_join(get_key_thread, NULL);
   pthread_join(execute_action_thread, NULL);
 
-  screen_destroy();
 
+  //clean up
+  screen_destroy();
   for(int i = 0; i < PLAYERS_MAX; i++){
     sem_destroy(&__Shm_game__->Players[i].sem_print_map);
   }
-
+  for(int i = 0; i < __beast_counter__; i++){
+    sem_destroy(&(__Beasts__[i].semaphore));
+  }
   shmdt(__Shm_game__);
   shmctl(shm_id, IPC_RMID, NULL);
   
@@ -73,6 +76,7 @@ void * execute_action(void * arg){
 
     for(int i = 0; i < PLAYERS_MAX; i++){
 
+      //check if player is still online
       if(kill(__Shm_game__->Players[i].pid, 0) != 0){
         if(__Shm_game__->Players[i].pid != NO_PROCESS){
           delete_player(__Shm_game__->Players + i, i);
@@ -81,6 +85,8 @@ void * execute_action(void * arg){
 
       select_action_player(__Shm_game__->Players + i);
     }
+
+    push_beasts();
 
     if(server_action_id == QUIT) {
       wrefresh(__Window__.terminal);

@@ -163,18 +163,10 @@ void select_action_player(Player_t * Player){
   switch (Player->action_id){
     case QUIT:
       break;
-    case KEY_RIGHT:
-      move_right(Player);
-      break;
-    case KEY_LEFT:
-      move_left(Player);
-      break;
-    case KEY_UP:
-      move_up(Player);
-      break;
-    case KEY_DOWN:
-      move_down(Player);
-      break;
+    case KEY_RIGHT: player_move(Player, 0, 1); break;
+    case KEY_LEFT: player_move(Player, 0, -1); break;
+    case KEY_UP: player_move(Player, -1, 0); break;
+    case KEY_DOWN: player_move(Player, 1, 0); break;
     case NO_ACTION:
        __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
       break;
@@ -183,22 +175,23 @@ void select_action_player(Player_t * Player){
   }
 }
 
-void move_right(Player_t * Player){
+void player_move(Player_t * Player, int y, int x){
   int way = 1;
 
-  switch (__board_str__[Player->coords.y][Player->coords.x + 1] ){
+  switch (__board_str__[Player->coords.y + y][Player->coords.x + x] ){
   case '|': return;
   case '#': Player->in_bushes = 1; break;
   case 'c': Player->coins_found ++; way = 0; break;
   case 't': Player->coins_found += 10; way = 0; break;
   case 'T': Player->coins_found += 50; way = 0; break;
-  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y ][Player->coords.x + 1]; break;
+  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y + y][Player->coords.x + x]; break;
   case '*':
-    __board_str__[Player->coords.y][Player->coords.x + 1] = 'D';
-    __dropped_treasure__[Player->coords.y][Player->coords.x + 1] = Player->coins_found;
+    __board_str__[Player->coords.y + y][Player->coords.x + x] = 'D';
+    __dropped_treasure__[Player->coords.y + y][Player->coords.x + x] = Player->coins_found;
     Player->coords.y = Player->coords_spawn.y;
     Player->coords.x = Player->coords_spawn.x;
     Player->coins_found = 0;
+    Player->deaths++;
     return;
   case 'A': 
     Player->coins_brought += Player->coins_found;
@@ -218,141 +211,14 @@ void move_right(Player_t * Player){
   __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
 
   if(way){
-    Player->block_before = __board_str__[Player->coords.y][Player->coords.x + 1];
+    Player->block_before = __board_str__[Player->coords.y + y][Player->coords.x + x];
   }
 
-  Player->coords.x++;
-  __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
-}
-
-void move_left(Player_t * Player){
-  int way = 1;
-
-  switch (__board_str__[Player->coords.y][Player->coords.x - 1] ){
-  case '|': return;
-  case '#': Player->in_bushes = 1; break;
-  case 'c': Player->coins_found ++; way = 0; break;
-  case 't': Player->coins_found += 10; way = 0; break;
-  case 'T': Player->coins_found += 50; way = 0; break;
-  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y][Player->coords.x - 1]; break;
-  case '*':
-    __board_str__[Player->coords.y][Player->coords.x - 1] = 'D';
-    __dropped_treasure__[Player->coords.y][Player->coords.x - 1] = Player->coins_found;
-    Player->coords.y = Player->coords_spawn.y;
-    Player->coords.x = Player->coords_spawn.x;
-    Player->coins_found = 0;
-    return;
-  case 'A': 
-    Player->coins_brought += Player->coins_found;
-    Player->coins_found = 0;
-    break;
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-    break;
-  default:
-    break;
-  }
-
-  //path
- 
-  __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
-  if(way){  
-    Player->block_before = __board_str__[Player->coords.y][Player->coords.x - 1];
-  }
-  
-
-  Player->coords.x--;
+  Player->coords.x += x;
+  Player->coords.y += y;
 
   __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
-}
 
-void move_up(Player_t * Player){
-  int way = 1;
-
-  switch (__board_str__[Player->coords.y - 1][Player->coords.x] ){
-  case '|': return;
-  case '#': Player->in_bushes = 1; break;
-  case 'c': Player->coins_found ++; way = 0; break;
-  case 't': Player->coins_found += 10; way = 0; break;
-  case 'T': Player->coins_found += 50; way = 0; break;
-  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y - 1][Player->coords.x]; break;
-  case '*':
-    __board_str__[Player->coords.y - 1][Player->coords.x] = 'D';
-    __dropped_treasure__[Player->coords.y - 1][Player->coords.x] = Player->coins_found;
-    Player->coords.y = Player->coords_spawn.y;
-    Player->coords.x = Player->coords_spawn.x;
-    Player->coins_found = 0;
-    return;
-  case 'A': 
-    Player->coins_brought = Player->coins_found;
-    Player->coins_found += 0;
-    break;
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-    break;
-  default:
-    break;
-  }
-
-  //path
-  
-  __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
-  if(way){  
-    Player->block_before = __board_str__[Player->coords.y - 1][Player->coords.x];
-  }
-  
-
-  Player->coords.y--;
-
-  __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
-}
-
-void move_down(Player_t * Player){
-  int way = 1;
-
-  switch (__board_str__[Player->coords.y + 1][Player->coords.x]){
-  case '|': return;
-  case '#': Player->in_bushes = 1; break;
-  case 'c': Player->coins_found ++; way = 0; break;
-  case 't': Player->coins_found += 10; way = 0; break;
-  case 'T': Player->coins_found += 50; way = 0; break;
-  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y + 1][Player->coords.x]; break;
-  case '*':
-    __board_str__[Player->coords.y + 1][Player->coords.x] = 'D';
-    __dropped_treasure__[Player->coords.y + 1][Player->coords.x] = Player->coins_found;
-    Player->coords.y = Player->coords_spawn.y;
-    Player->coords.x = Player->coords_spawn.x;
-    Player->coins_found = 0;
-    return;
-  case 'A': 
-    Player->coins_brought = Player->coins_found;
-    Player->coins_found += 0;
-    break;
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-
-    break;
-  default:
-    break;
-  }
-
-  //path
-  __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
-
-  if(way){
-    Player->block_before = __board_str__[Player->coords.y + 1][Player->coords.x];
-  }
-  
-
-  Player->coords.y++;
-
-  __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
 }
 
 void players_init(Player_t * players){
@@ -411,12 +277,12 @@ void beast_init(){
   random_filed(&(__Beasts__[__beast_counter__].coords));
   __Beasts__[__beast_counter__].block_before = '.';
   sem_init(&(__Beasts__[__beast_counter__].semaphore), 0, 1);
-  pthread_create(&(__Beasts__[__beast_counter__].thread), NULL, beast_move, __Beasts__ + __beast_counter__);
+  pthread_create(&(__Beasts__[__beast_counter__].thread), NULL, beast_select_move, __Beasts__ + __beast_counter__);
 
   __beast_counter__++;    
 }
 
-void * beast_move(void * arg){
+void * beast_select_move(void * arg){
   Beast_t * Beast = (Beast_t *)arg;
 
   while(1){
@@ -426,10 +292,10 @@ void * beast_move(void * arg){
     //if see player, choose closest move
 
     switch (dir){
-      case UP: beast_move_up(Beast); break;
-      case DOWN: beast_move_down(Beast); break;
-      case RIGHT: beast_move_right(Beast); break;
-      case LEFT: beast_move_left(Beast); break;
+      case UP: beast_move(Beast, -1, 0); break;
+      case DOWN: beast_move(Beast, 1, 0); break;
+      case RIGHT: beast_move(Beast, 0, 1); break;
+      case LEFT: beast_move(Beast, 0, -1); break;
       
       default:
         break;
@@ -437,8 +303,8 @@ void * beast_move(void * arg){
   }
 }
 
-void beast_move_left(Beast_t * Beast){
-  switch (__board_str__[Beast->coords.y][Beast->coords.x - 1] ){
+void beast_move(Beast_t * Beast, int y, int x){
+  switch (__board_str__[Beast->coords.y + y][Beast->coords.x + x] ){
   case '|':
   case '#': 
   case '*':
@@ -456,91 +322,11 @@ void beast_move_left(Beast_t * Beast){
   //path
  
   __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
-  Beast->block_before = __board_str__[Beast->coords.y][Beast->coords.x - 1];
+  Beast->block_before = __board_str__[Beast->coords.y + y][Beast->coords.x + x];
   
 
-  Beast->coords.x--;
-
-  __board_str__[Beast->coords.y][Beast->coords.x] = '*';
-}
-
-void beast_move_right(Beast_t * Beast){
-  switch (__board_str__[Beast->coords.y][Beast->coords.x + 1] ){
-  case '|':
-  case '#': 
-  case '*':
-    return;
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-    //kill
-    break;
-  default:
-    break;
-  }
-
-  //path
- 
-  __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
-  Beast->block_before = __board_str__[Beast->coords.y][Beast->coords.x + 1];
-  
-
-  Beast->coords.x++;
-
-  __board_str__[Beast->coords.y][Beast->coords.x] = '*';
-}
-
-void beast_move_up(Beast_t * Beast){
-
-  switch (__board_str__[Beast->coords.y - 1][Beast->coords.x] ){
-  case '|':
-  case '#': 
-  case '*':
-    return;
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-    //kill
-    break;
-  default:
-    break;
-  }
-
-  //path
- 
-  __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
-  Beast->block_before = __board_str__[Beast->coords.y - 1][Beast->coords.x];
-  
-
-  Beast->coords.y--;
-
-  __board_str__[Beast->coords.y][Beast->coords.x] = '*';
-}
-
-void beast_move_down(Beast_t * Beast){
-switch (__board_str__[Beast->coords.y + 1][Beast->coords.x ] ){
-  case '|':
-  case '#': 
-  case '*':
-    return;
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-    //kill
-    break;
-  default:
-    break;
-  }
-
-  //path
-  __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
-  Beast->block_before = __board_str__[Beast->coords.y + 1][Beast->coords.x];
-  
-
-  Beast->coords.y++;
+  Beast->coords.x += x;
+  Beast->coords.y += y;
 
   __board_str__[Beast->coords.y][Beast->coords.x] = '*';
 }

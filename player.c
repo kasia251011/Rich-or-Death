@@ -47,9 +47,7 @@ int main(){
   pthread_join(get_key_thread, NULL);
 
   __Shm_game__->Players[__index__].pid = -3;
-
   screen_destroy();
-
   shmdt(__Shm_game__);
   
   return 0;
@@ -60,7 +58,6 @@ void * get_key(void * arg){
 
   while(1){
     __Shm_game__->Players[__index__].action_id = mvwgetch(__Window__.input, 1, 1);   
-
     if(__Shm_game__->Players[__index__].action_id == QUIT) break;
   }
 
