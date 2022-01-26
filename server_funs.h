@@ -28,7 +28,7 @@ void delete_player(Player_t * Player, int index);
 void send_map_to_player(Player_t * Player);
 
 //beast actions
-void beast_move(Beast_t *);
+void * beast_move(void *);
 void beast_move_left(Beast_t *);
 void beast_move_right(Beast_t *);
 void beast_move_up(Beast_t *);

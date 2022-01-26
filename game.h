@@ -84,6 +84,7 @@ typedef struct {
 typedef struct {
   pthread_t thread;
   Coordinates_t coords;
+  char block_before;
 } Beast_t;
 
 

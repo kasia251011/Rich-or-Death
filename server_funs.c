@@ -142,11 +142,12 @@ void select_action_server(Action_id_t action_id, Window_t * Window){
       break;
     case ACTION_BEAST:
 
-      /*if(__beast_counter__ == 4) break;
+      if(__beast_counter__ == 4) break;
         random_filed(&(__Beasts__[__beast_counter__].coords));
-        pthread_create(&(__Beasts__[__beast_counter__].thread), NULL, beast_move, &__beast_counter__);
+        __Beasts__[__beast_counter__].block_before = '.';
+        pthread_create(&(__Beasts__[__beast_counter__].thread), NULL, beast_move, __Beasts__ + __beast_counter__);
 
-        __beast_counter__++;*/      
+        __beast_counter__++;    
 
       break;
     default:
@@ -415,11 +416,12 @@ void send_map_to_player(Player_t * Player){
   }
 }
 
-/*void beast_move(Beast_t * Beast){
+void * beast_move(void * arg){
+  Beast_t * Beast = (Beast_t *)arg;
 
   while(1){
     Direction_t dir = rand() % 4;
-
+    sleep(1);
     switch (dir){
       case UP: beast_move_up(Beast); break;
       case DOWN: beast_move_down(Beast); break;
@@ -430,22 +432,114 @@ void send_map_to_player(Player_t * Player){
         break;
     } 
   }
+}
 
+
+void beast_move_left(Beast_t * Beast){
+  switch (__board_str__[Beast->coords.y][Beast->coords.x - 1] ){
+  case '|':
+  case '#': 
+  case '*':
+    return;
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+    //kill
+    break;
+  default:
+    break;
+  }
+
+  //path
+ 
+  __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
+  Beast->block_before = __board_str__[Beast->coords.y][Beast->coords.x - 1];
   
 
-}
-void beast_move_left(Beast_t * Beast){
+  Beast->coords.x--;
 
+  __board_str__[Beast->coords.y][Beast->coords.x] = '*';
 }
 
 void beast_move_right(Beast_t * Beast){
+  switch (__board_str__[Beast->coords.y][Beast->coords.x + 1] ){
+  case '|':
+  case '#': 
+  case '*':
+    return;
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+    //kill
+    break;
+  default:
+    break;
+  }
 
+  //path
+ 
+  __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
+  Beast->block_before = __board_str__[Beast->coords.y][Beast->coords.x + 1];
+  
+
+  Beast->coords.x++;
+
+  __board_str__[Beast->coords.y][Beast->coords.x] = '*';
 }
 
 void beast_move_up(Beast_t * Beast){
 
+  switch (__board_str__[Beast->coords.y - 1][Beast->coords.x] ){
+  case '|':
+  case '#': 
+  case '*':
+    return;
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+    //kill
+    break;
+  default:
+    break;
+  }
+
+  //path
+ 
+  __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
+  Beast->block_before = __board_str__[Beast->coords.y - 1][Beast->coords.x];
+  
+
+  Beast->coords.y--;
+
+  __board_str__[Beast->coords.y][Beast->coords.x] = '*';
 }
 
 void beast_move_down(Beast_t * Beast){
+switch (__board_str__[Beast->coords.y + 1][Beast->coords.x ] ){
+  case '|':
+  case '#': 
+  case '*':
+    return;
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+    //kill
+    break;
+  default:
+    break;
+  }
 
-}*/
+  //path
+ 
+  __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
+  Beast->block_before = __board_str__[Beast->coords.y + 1][Beast->coords.x];
+  
+
+  Beast->coords.y++;
+
+  __board_str__[Beast->coords.y][Beast->coords.x] = '*';
+}
