@@ -8,9 +8,8 @@
 
 #include "player_funs.h"
 
-Window_t player_window;
-
-Shm_game_t * Shm_game = NULL;
+Shm_game_t * __Shm_game__;
+Window_t __Window__;
 int __index__ = 0;
 
 void * get_key(void * arg);
@@ -27,21 +26,18 @@ int main(){
     return 0;
   }
 
-  Shm_game = (Shm_game_t *)shmat(shm_id, NULL, 0);
-  
-  __index__ = get_player_index(Shm_game->Players);
+  __Shm_game__ = (Shm_game_t *)shmat(shm_id, NULL, 0);
+  __index__ = get_player_index(__Shm_game__->Players);
 
   if(__index__ < 0){
     printf("Couldn't join to tha game, too many players");
     return 0;
   }
 
-  Shm_game->Players[__index__].pid = getpid();
+  __Shm_game__->Players[__index__].pid = getpid();
 
   screen_init();
-  window_init(&player_window);
-
-  keypad(player_window.input, true);
+  window_init(&__Window__);
 
   pthread_t get_key_thread, show_map_thread;
 
@@ -50,11 +46,11 @@ int main(){
 
   pthread_join(get_key_thread, NULL);
 
-  Shm_game->Players[__index__].pid = -3;
+  __Shm_game__->Players[__index__].pid = -3;
 
   screen_destroy();
 
-  shmdt(Shm_game);
+  shmdt(__Shm_game__);
   
   return 0;
 }
@@ -63,9 +59,9 @@ void * get_key(void * arg){
   char action;
 
   while(1){
-    Shm_game->Players[__index__].action_id = mvwgetch(player_window.input, 1, 1);   
+    __Shm_game__->Players[__index__].action_id = mvwgetch(__Window__.input, 1, 1);   
 
-    if(Shm_game->Players[__index__].action_id == QUIT) break;
+    if(__Shm_game__->Players[__index__].action_id == QUIT) break;
   }
 
   return NULL;
@@ -77,17 +73,18 @@ void * show_map(void * arg){
   while(1){
     //nie działa
 
-    if(kill(Shm_game->server_pid, 0) != 0){
-      mvwprintw(player_window.terminal, 1, 1, "Server nie istnieje");
-      wrefresh(player_window.terminal);
+    if(kill(__Shm_game__->server_pid, 0) != 0){
+      mvwprintw(__Window__.terminal, 1, 1, "Server nie istnieje");
+      wrefresh(__Window__.terminal);
+      sleep(1);
       exit(1);
     }
 
     //
 
-    sem_wait(&(Shm_game->Players[__index__].sem_print_map));
+    sem_wait(&(__Shm_game__->Players[__index__].sem_print_map));
 
-    clear_map(&player_window);
-    render_map(Shm_game->Players + __index__, &player_window, Shm_game->round, Shm_game->server_pid, Shm_game->camp_coords);
+    clear_map(&__Window__);
+    render_map(__Shm_game__->Players + __index__);
   }
 }

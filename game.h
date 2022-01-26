@@ -83,6 +83,7 @@ typedef struct {
 
 typedef struct {
   pthread_t thread;
+  sem_t semaphore;
   Coordinates_t coords;
   char block_before;
 } Beast_t;

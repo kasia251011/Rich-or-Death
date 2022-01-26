@@ -3,8 +3,11 @@
 
 #include "game.h"
 
-int get_player_index(Player_t * Players);
-void render_map(Player_t * Player, Window_t * Window, int round, pid_t , Coordinates_t camp_coords);
-void clear_map(Window_t * Window);
+extern Shm_game_t * __Shm_game__;
+extern Window_t __Window__;
+
+int get_player_index();
+void render_map(Player_t * Player);
+void clear_map();
 
 #endif

@@ -16,12 +16,14 @@ void screen_destroy(){
 }
 
 void window_init(Window_t * window){
-  
+  srand(time(NULL));
+
   window->board = newwin(BOARD_HEIGHT, BOARD_WIDTH, 1, 1);
   window->stats = newwin(STATS_HEIGHT, STATS_WIDTH, 1, 55);
   window->terminal = newwin(3, BOARD_WIDTH, 27, 1);
   window->input = newwin(3, BOARD_WIDTH, 30, 1);
 
+  keypad(window->input, true);
   refresh();
 
   box(window->stats, 0, 0);

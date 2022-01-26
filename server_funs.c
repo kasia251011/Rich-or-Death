@@ -1,15 +1,14 @@
 #include "server_funs.h"
 
-Blocks_t Blocks;
-Beast_t __Beasts__[BEAST_MAX];
+
+Blocks_t __Blocks__;
+int __beast_counter__ = 0;
+
 char __board_str__[BOARD_HEIGHT][BOARD_WIDTH];
 int __dropped_treasure__[BOARD_HEIGHT][BOARD_WIDTH];
-int __beast_counter__ = 0;
 
 
 void random_filed(Coordinates_t * coords){
-  srand(time(NULL));
-
   do{
     coords->x = rand() % BOARD_WIDTH;
     coords->y = rand() % BOARD_HEIGHT;
@@ -31,123 +30,114 @@ int load_board(){
     return 0;
 }
 
-void board_init(Coordinates_t * camp_coords){
+void board_init(){
   load_board();
-  
   //campasite
-  random_filed(camp_coords);
-  __board_str__[camp_coords->y][camp_coords->x] = 'A';
-
+  random_filed(&(__Shm_game__->camp_coords));
+  __board_str__[__Shm_game__->camp_coords.y][__Shm_game__->camp_coords.x] = 'A';
 }
 
-void refresh_server(Window_t * Window, Player_t * Players, int round){
-
-  blocks_init(&Blocks);
+void refresh_server(){
+  
   chtype block;
 
   for (int i = 0; i < BOARD_HEIGHT; ++i){
     for (int j = 0; j < BOARD_WIDTH; ++j){
       switch (__board_str__[i][j]){
-        case '|': block = Blocks.Wall; break;
-        case '.': block = Blocks.Path; break;
-        case '#': block = Blocks.Bushes; break;
-        case 'A': block = Blocks.Campasite; break;
-        case 'c': block = Blocks.OneCoin; break;
-        case 't': block = Blocks.Treasue; break;
-        case 'T': block = Blocks.Large_Treasure; break;
-        case 'D': block = Blocks.Treasue; break;
-        case '*': block = Blocks.Beast; break;
-        case '1': block = Blocks.Players[0]; break;
-        case '2': block = Blocks.Players[1]; break;
-        case '3': block = Blocks.Players[2]; break;
-        case '4': block = Blocks.Players[3]; break;
+        case '|': block = __Blocks__.Wall; break;
+        case '.': block = __Blocks__.Path; break;
+        case '#': block = __Blocks__.Bushes; break;
+        case 'A': block = __Blocks__.Campasite; break;
+        case 'c': block = __Blocks__.OneCoin; break;
+        case 't': block = __Blocks__.Treasue; break;
+        case 'T': block = __Blocks__.Large_Treasure; break;
+        case 'D': block = __Blocks__.Treasue; break;
+        case '*': block = __Blocks__.Beast; break;
+        case '1': block = __Blocks__.Players[0]; break;
+        case '2': block = __Blocks__.Players[1]; break;
+        case '3': block = __Blocks__.Players[2]; break;
+        case '4': block = __Blocks__.Players[3]; break;
         default:
           break;
       }
 
-      mvwaddch(Window->board, i, j, block);
+      mvwaddch(__Window__.board, i, j, block);
 
       if(__board_str__[i][j] == 'A'){
-        mvwprintw(Window->stats, 2, 1, " Campasite X/Y: %02d/%02d", j, i);
+        mvwprintw(__Window__.stats, 2, 1, " Campasite X/Y: %02d/%02d", j, i);
       }
     }
   }
 
-  wrefresh(Window->board);
+  wrefresh(__Window__.board);
 
   //stats
-  mvwprintw(Window->stats, 1, 1, "Server's PID: %d", getpid());
-  mvwprintw(Window->stats, 3, 2, "Round number: %d", round);
-  mvwprintw(Window->stats, 5, 1, "Parameter:  Player1  Player2  Player3  Player4");
+  mvwprintw(__Window__.stats, 1, 1, "Server's PID: %d", getpid());
+  mvwprintw(__Window__.stats, 3, 2, "Round number: %d", __Shm_game__->round);
+  mvwprintw(__Window__.stats, 5, 1, "Parameter:  Player1  Player2  Player3  Player4");
 
   for(int i = 0, x = 0; i < PLAYERS_MAX; i++, x+=9){
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 6, 13 + x, "%d", Players[i].pid);
+    if(__Shm_game__->Players[i].pid != NO_PROCESS){
+      mvwprintw(__Window__.stats, 6, 13 + x, "%d", __Shm_game__->Players[i].pid);
     }else{
-      mvwprintw(Window->stats, 6, 13+ x, "-      ");
+      mvwprintw(__Window__.stats, 6, 13+ x, "-      ");
     }
 
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 7, 13+ x, "%02d/%02d", Players[i].coords.x,Players[i].coords.y);
+    if(__Shm_game__->Players[i].pid != NO_PROCESS){
+      mvwprintw(__Window__.stats, 7, 13+ x, "%02d/%02d", __Shm_game__->Players[i].coords.x,__Shm_game__->Players[i].coords.y);
     }else{
-      mvwprintw(Window->stats, 7, 13+ x, "--/--  ");
+      mvwprintw(__Window__.stats, 7, 13+ x, "--/--  ");
     }
 
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 8, 13+ x, "%d", Players[i].deaths);
+    if(__Shm_game__->Players[i].pid != NO_PROCESS){
+      mvwprintw(__Window__.stats, 8, 13+ x, "%d", __Shm_game__->Players[i].deaths);
     }else{
-      mvwprintw(Window->stats, 8, 13+ x, "-  ");
+      mvwprintw(__Window__.stats, 8, 13+ x, "-  ");
     }
 
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 11, 13+ x, "%d", Players[i].coins_found);
+    if(__Shm_game__->Players[i].pid != NO_PROCESS){
+      mvwprintw(__Window__.stats, 11, 13+ x, "%d", __Shm_game__->Players[i].coins_found);
     }
 
-    if(Players[i].pid != NO_PROCESS){
-      mvwprintw(Window->stats, 12, 13+ x, "%d", Players[i].coins_brought);
+    if(__Shm_game__->Players[i].pid != NO_PROCESS){
+      mvwprintw(__Window__.stats, 12, 13+ x, "%d", __Shm_game__->Players[i].coins_brought);
     }
 
   }
 
-  mvwprintw(Window->stats, 6, 1, " PID       ");
-  mvwprintw(Window->stats, 7, 1, " CURR X/Y  ");
-  mvwprintw(Window->stats, 8, 1, " Deaths    ");
+  mvwprintw(__Window__.stats, 6, 1, " PID       ");
+  mvwprintw(__Window__.stats, 7, 1, " CURR X/Y  ");
+  mvwprintw(__Window__.stats, 8, 1, " Deaths    ");
 
-  mvwprintw(Window->stats, 10, 1, " Coins");
-  mvwprintw(Window->stats, 11, 1, "   carried ");
-  mvwprintw(Window->stats, 12, 1, "   brought ");
+  mvwprintw(__Window__.stats, 10, 1, " Coins");
+  mvwprintw(__Window__.stats, 11, 1, "   carried ");
+  mvwprintw(__Window__.stats, 12, 1, "   brought ");
 
-  wrefresh(Window->stats);
+  wrefresh(__Window__.stats);
 
 }
 
-void select_action_server(Action_id_t action_id, Window_t * Window){
-  blocks_init(&Blocks);
+void select_action_server(Action_id_t action_id){
+  blocks_init(&__Blocks__);
 
   switch (action_id){
     case QUIT:
-      mvwprintw(Window->terminal, 1, 1, "Press any key to quit...");
+      mvwprintw(__Window__.terminal, 1, 1, "Press any key to quit...");
       return;
     case ACTION_ONE_COIN:
-      mvwprintw(Window->terminal, 1, 1, "Added One Coin");
+      mvwprintw(__Window__.terminal, 1, 1, "Added One Coin");
       add_coin(ACTION_ONE_COIN);
       break;
     case ACTION_TREASURE:
-      mvwprintw(Window->terminal, 1, 1, "Added Treasure");
+      mvwprintw(__Window__.terminal, 1, 1, "Added Treasure");
       add_coin(ACTION_TREASURE);
       break;
     case ACTION_LARGE_TREASURE:
-      mvwprintw(Window->terminal, 1, 1, "Added Large Treasure");
+      mvwprintw(__Window__.terminal, 1, 1, "Added Large Treasure");
       add_coin(ACTION_LARGE_TREASURE);
       break;
     case ACTION_BEAST:
-
-      if(__beast_counter__ == 4) break;
-        random_filed(&(__Beasts__[__beast_counter__].coords));
-        __Beasts__[__beast_counter__].block_before = '.';
-        pthread_create(&(__Beasts__[__beast_counter__].thread), NULL, beast_move, __Beasts__ + __beast_counter__);
-
-        __beast_counter__++;    
+      beast_init();
 
       break;
     default:
@@ -163,7 +153,7 @@ void add_coin(char type){
   __board_str__[coords.y][coords.x] = type;
 }
 
-void select_action_player(Player_t * Player, Window_t * Window){
+void select_action_player(Player_t * Player){
   if(Player->pid == NO_PROCESS) return;
   if(Player->in_bushes){
     Player->in_bushes = 0;
@@ -230,10 +220,8 @@ void move_right(Player_t * Player){
   if(way){
     Player->block_before = __board_str__[Player->coords.y][Player->coords.x + 1];
   }
-  
 
   Player->coords.x++;
-
   __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
 }
 
@@ -416,12 +404,27 @@ void send_map_to_player(Player_t * Player){
   }
 }
 
+
+void beast_init(){
+  if(__beast_counter__ == 4) return;
+  
+  random_filed(&(__Beasts__[__beast_counter__].coords));
+  __Beasts__[__beast_counter__].block_before = '.';
+  sem_init(&(__Beasts__[__beast_counter__].semaphore), 0, 1);
+  pthread_create(&(__Beasts__[__beast_counter__].thread), NULL, beast_move, __Beasts__ + __beast_counter__);
+
+  __beast_counter__++;    
+}
+
 void * beast_move(void * arg){
   Beast_t * Beast = (Beast_t *)arg;
 
   while(1){
     Direction_t dir = rand() % 4;
-    sleep(1);
+    sem_wait(&(Beast->semaphore));
+
+    //if see player, choose closest move
+
     switch (dir){
       case UP: beast_move_up(Beast); break;
       case DOWN: beast_move_down(Beast); break;
@@ -433,7 +436,6 @@ void * beast_move(void * arg){
     } 
   }
 }
-
 
 void beast_move_left(Beast_t * Beast){
   switch (__board_str__[Beast->coords.y][Beast->coords.x - 1] ){
@@ -534,7 +536,6 @@ switch (__board_str__[Beast->coords.y + 1][Beast->coords.x ] ){
   }
 
   //path
- 
   __board_str__[Beast->coords.y][Beast->coords.x] = Beast->block_before;
   Beast->block_before = __board_str__[Beast->coords.y + 1][Beast->coords.x];
   
@@ -543,3 +544,10 @@ switch (__board_str__[Beast->coords.y + 1][Beast->coords.x ] ){
 
   __board_str__[Beast->coords.y][Beast->coords.x] = '*';
 }
+
+void push_beasts(){
+  for(int  i = 0; i < __beast_counter__; i++){
+    sem_post(&(__Beasts__[i].semaphore));
+  }
+}
+

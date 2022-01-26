@@ -7,12 +7,13 @@
 #include <string.h>
 #include "server_funs.h"
 
-Shm_game_t * Shm_game = NULL;
+Shm_game_t * __Shm_game__;
+Beast_t __Beasts__[BEAST_MAX];
+Window_t __Window__;
 
 void * get_key(void * arg);
 void * execute_action(void * arg);
 
-Window_t server_window;
 Action_id_t server_action_id = NO_ACTION;
 
 int main(){
@@ -20,16 +21,16 @@ int main(){
   //GET PLAYER FROM SHM
   key_t KEY_SHM = 123;
   int shm_id = shmget(KEY_SHM, sizeof(Shm_game_t), IPC_CREAT | 0666);
-  Shm_game = (Shm_game_t *)shmat(shm_id, NULL, 0);
+  __Shm_game__ = (Shm_game_t *)shmat(shm_id, NULL, 0);
 
-  Shm_game->round = 0;
-  Shm_game->server_pid = getpid();
+  __Shm_game__->round = 0;
+  __Shm_game__->server_pid = getpid();
 
   screen_init();
-  window_init(&server_window);
-  board_init(&(Shm_game->camp_coords));
-  keypad(server_window.input, true);
-  players_init(Shm_game->Players);
+  window_init(&__Window__);
+  board_init(&(__Shm_game__->camp_coords));
+  
+  players_init(__Shm_game__->Players);
 
   pthread_t get_key_thread, execute_action_thread;
 
@@ -42,10 +43,10 @@ int main(){
   screen_destroy();
 
   for(int i = 0; i < PLAYERS_MAX; i++){
-    sem_destroy(&Shm_game->Players[i].sem_print_map);
+    sem_destroy(&__Shm_game__->Players[i].sem_print_map);
   }
 
-  shmdt(Shm_game);
+  shmdt(__Shm_game__);
   shmctl(shm_id, IPC_RMID, NULL);
   
   return 0;
@@ -57,7 +58,7 @@ void * get_key(void * arg){
   char action;
 
   while(1){
-    server_action_id = mvwgetch(server_window.input, 1, 1);
+    server_action_id = mvwgetch(__Window__.input, 1, 1);
     if(server_action_id == QUIT) return NULL;
   }
 
@@ -68,46 +69,42 @@ void * execute_action(void * arg){
 
   while (1){
 
-    select_action_server(server_action_id, &server_window);
+    select_action_server(server_action_id);
 
     for(int i = 0; i < PLAYERS_MAX; i++){
 
-      if(kill(Shm_game->Players[i].pid, 0) != 0){
-        if(Shm_game->Players[i].pid != NO_PROCESS){
-          delete_player(Shm_game->Players + i, i);
+      if(kill(__Shm_game__->Players[i].pid, 0) != 0){
+        if(__Shm_game__->Players[i].pid != NO_PROCESS){
+          delete_player(__Shm_game__->Players + i, i);
         }
       }
 
-      select_action_player(Shm_game->Players + i , &server_window);
+      select_action_player(__Shm_game__->Players + i);
     }
 
     if(server_action_id == QUIT) {
-      wrefresh(server_window.terminal);
+      wrefresh(__Window__.terminal);
       return NULL;
     }
 
     server_action_id = NO_ACTION;
     for(int i = 0; i < PLAYERS_MAX; i++){
-      Shm_game->Players[i].action_id = NO_ACTION;
+      __Shm_game__->Players[i].action_id = NO_ACTION;
     }
 
-    wrefresh(server_window.board);
-    wrefresh(server_window.terminal);
-    wrefresh(server_window.stats);
-
-    refresh_server(&server_window, Shm_game->Players, Shm_game->round);
+    refresh_server();
 
     for(int i = 0; i < PLAYERS_MAX; i++){
-      if(Shm_game->Players[i].pid > 0 ){
-        send_map_to_player(&(Shm_game->Players[i]));
-        sem_post(&(Shm_game->Players[i].sem_print_map));
+      if(__Shm_game__->Players[i].pid > 0 ){
+        send_map_to_player(&(__Shm_game__->Players[i]));
+        sem_post(&(__Shm_game__->Players[i].sem_print_map));
         
       }
     }
     
     
     usleep(500000);
-    Shm_game->round++;
+    __Shm_game__->round++;
   }
   
 }
