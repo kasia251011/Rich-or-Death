@@ -51,7 +51,7 @@ void refresh_server(){
         case 'c': block = __Blocks__.OneCoin; break;
         case 't': block = __Blocks__.Treasue; break;
         case 'T': block = __Blocks__.Large_Treasure; break;
-        case 'D': block = __Blocks__.Treasue; break;
+        case 'D': block = __Blocks__.Dropped_Treasure; break;
         case '*': block = __Blocks__.Beast; break;
         case '1': block = __Blocks__.Players[0]; break;
         case '2': block = __Blocks__.Players[1]; break;
@@ -175,8 +175,10 @@ void select_action_player(Player_t * Player){
   }
 }
 
+
 void player_move(Player_t * Player, int y, int x){
   int way = 1;
+  int second_player_number;
 
   switch (__board_str__[Player->coords.y + y][Player->coords.x + x] ){
   case '|': return;
@@ -184,7 +186,7 @@ void player_move(Player_t * Player, int y, int x){
   case 'c': Player->coins_found ++; way = 0; break;
   case 't': Player->coins_found += 10; way = 0; break;
   case 'T': Player->coins_found += 50; way = 0; break;
-  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y + y][Player->coords.x + x]; break;
+  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y + y][Player->coords.x + x]; way = 0;break;
   case '*':
     __board_str__[Player->coords.y + y][Player->coords.x + x] = 'D';
     __dropped_treasure__[Player->coords.y + y][Player->coords.x + x] = Player->coins_found;
@@ -201,6 +203,39 @@ void player_move(Player_t * Player, int y, int x){
   case '2':
   case '3':
   case '4':
+    
+    second_player_number =  __board_str__[Player->coords.y + y][Player->coords.x + x] - '0';
+
+    Player_t * second_player;
+
+    for(int i = 0; i < PLAYERS_MAX; i++){
+      if(second_player_number == __Shm_game__->Players[i].number){
+        second_player = &__Shm_game__->Players[i];
+      }
+    }
+
+    //średni warunek, mocno średni
+    if(Player->in_bushes == 1 || second_player->in_bushes == 1)break;
+    
+    __dropped_treasure__[Player->coords.y + y][Player->coords.x + x] = Player->coins_found + second_player->coins_found;
+    __board_str__[Player->coords.y + y][Player->coords.x + x] = 'D';
+
+    __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
+    Player->coins_found = 0;
+    Player->deaths ++;
+    Player->coords.y = Player->coords_spawn.y;
+    Player->coords.x = Player->coords_spawn.x;
+   
+
+    x = 0;
+    y = 0;
+
+    second_player->coins_found = 0;
+    second_player->deaths ++;
+    second_player->coords.y = second_player->coords_spawn.y;
+    second_player->coords.x = second_player->coords_spawn.x;
+    
+
     break;
   default:
     break;

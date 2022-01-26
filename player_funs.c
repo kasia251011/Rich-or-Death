@@ -23,7 +23,7 @@ void render_map(Player_t * Player){
         case 'c': block = Blocks.OneCoin; break;
         case 't': block = Blocks.Treasue; break;
         case 'T': block = Blocks.Large_Treasure; break;
-        case 'D': block = Blocks.Treasue; break;
+        case 'D': block = Blocks.Dropped_Treasure; break;
         case '*': block = Blocks.Beast; break;
         case '1': block = Blocks.Players[0]; break;
         case '2': block = Blocks.Players[1]; break;
