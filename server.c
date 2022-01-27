@@ -20,7 +20,13 @@ int main(){
 
   //GET PLAYER FROM SHM
   key_t KEY_SHM = 123;
-  int shm_id = shmget(KEY_SHM, sizeof(Shm_game_t), IPC_CREAT | 0666);
+  int shm_id = shmget(KEY_SHM, sizeof(Shm_game_t), IPC_EXCL | IPC_CREAT | 0666);
+
+  if(errno == EEXIST){
+    printf("Server already exist\n");
+    return 0;
+  }
+
   __Shm_game__ = (Shm_game_t *)shmat(shm_id, NULL, 0);
   __Shm_game__->round = 0;
   __Shm_game__->server_pid = getpid();

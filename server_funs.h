@@ -33,6 +33,6 @@ void beast_init();
 void * beast_select_move(void *);
 void beast_move(Beast_t *, int y, int x);
 void push_beasts();
-
+int chase(Beast_t *);
 
 #endif

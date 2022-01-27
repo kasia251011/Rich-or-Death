@@ -33,7 +33,7 @@ void render_map(Player_t * Player){
           break;
       }
 
-      if(Player->dropped[i][j] > 0){
+      if(Player->dropped[i][j] > 0 && Player->dropped[i][j] != '*'){
         block = Blocks.Dropped_Treasure;
       }
 

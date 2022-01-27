@@ -66,7 +66,7 @@ void refresh_server(){
           break;
       }
 
-      if(__dropped_treasure__[i][j] > 0){
+      if(__dropped_treasure__[i][j] > 0 && __board_str__[i][j] != '*'){
         block = __Blocks__.Dropped_Treasure;
       }
 
@@ -200,6 +200,8 @@ void player_move(Player_t * Player, int y, int x){
     __dropped_treasure__[Player->coords.y + y][Player->coords.x + x] = Player->coins_found;
     __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
     
+
+
     Player->coords.y = Player->coords_spawn.y;
     Player->coords.x = Player->coords_spawn.x;
     
@@ -336,12 +338,18 @@ void beast_init(){
 
 void * beast_select_move(void * arg){
   Beast_t * Beast = (Beast_t *)arg;
+  Direction_t dir;
+
+  mvwprintw(__Window__.terminal, 1, 1, "%d %d %d %d", KEY_LEFT, KEY_RIGHT, KEY_DOWN, KEY_UP);
+  wrefresh(__Window__.terminal);
 
   while(1){
-    Direction_t dir = rand() % 4;
+    dir = chase(Beast);
+    if(dir == -1){
+      dir = rand() % 4;
+    }
+    
     sem_wait(&(Beast->semaphore));
-
-    //if see player, choose closest move
 
     switch (dir){
       case UP: beast_move(Beast, -1, 0); break;
@@ -410,3 +418,39 @@ void push_beasts(){
   }
 }
 
+int chase(Beast_t * Beast){
+  int i = 0;
+
+  while(__board_str__[Beast->coords.y + i][Beast->coords.x] != '|' && __board_str__[Beast->coords.y + i][Beast->coords.x] != '#' && __board_str__[Beast->coords.y + i][Beast->coords.x] != 'A' ){
+    if(__board_str__[Beast->coords.y + i][Beast->coords.x] == '1' || __board_str__[Beast->coords.y + i][Beast->coords.x] == '2' || __board_str__[Beast->coords.y + i][Beast->coords.x] == '3' ||  __board_str__[Beast->coords.y + i][Beast->coords.x] == '4' ){
+      return DOWN;
+    }
+    i++;
+  }
+  
+  i = 0;
+  while(__board_str__[Beast->coords.y - i][Beast->coords.x] != '|' && __board_str__[Beast->coords.y - i][Beast->coords.x] != '#' && __board_str__[Beast->coords.y - i][Beast->coords.x] != 'A' ){
+    if(__board_str__[Beast->coords.y - i][Beast->coords.x] == '1' || __board_str__[Beast->coords.y - i][Beast->coords.x] == '2' || __board_str__[Beast->coords.y - i][Beast->coords.x] == '3' ||  __board_str__[Beast->coords.y - i][Beast->coords.x] == '4' ){
+      return UP;
+    }
+    i++;
+  }
+
+  i = 0;
+  while(__board_str__[Beast->coords.y ][Beast->coords.x + i] != '|' && __board_str__[Beast->coords.y][Beast->coords.x + i] != '#' && __board_str__[Beast->coords.y][Beast->coords.x + i] != 'A' ){
+    if(__board_str__[Beast->coords.y ][Beast->coords.x + i] == '1' || __board_str__[Beast->coords.y][Beast->coords.x + i] == '2' || __board_str__[Beast->coords.y][Beast->coords.x + i] == '3' ||  __board_str__[Beast->coords.y][Beast->coords.x + i] == '4' ){
+      return RIGHT;
+    }
+    i++;
+  }
+
+  i = 0;
+  while(__board_str__[Beast->coords.y ][Beast->coords.x - i] != '|' && __board_str__[Beast->coords.y][Beast->coords.x - i] != '#' && __board_str__[Beast->coords.y][Beast->coords.x - i] != 'A' ){
+    if(__board_str__[Beast->coords.y ][Beast->coords.x - i] == '1' || __board_str__[Beast->coords.y][Beast->coords.x - i] == '2' || __board_str__[Beast->coords.y][Beast->coords.x - i] == '3' ||  __board_str__[Beast->coords.y][Beast->coords.x - i] == '4' ){
+      return LEFT;
+    }
+    i++;
+  }
+
+  return -1;
+}

@@ -66,20 +66,21 @@ void * get_key(void * arg){
 
 void * show_map(void * arg){
   int i = 0;
+  struct timespec ts;
+  
+  
 
   while(1){
-    //nie działa
+    clock_gettime(CLOCK_REALTIME, &ts);
+    ts.tv_sec += 2;
 
-    if(kill(__Shm_game__->server_pid, 0) != 0){
-      mvwprintw(__Window__.terminal, 1, 1, "Server nie istnieje");
+    if(sem_timedwait(&(__Shm_game__->Players[__index__].sem_print_map), &ts) == -1){
+      mvwprintw(__Window__.terminal, 1, 1, "Server does not exist anymore, press any kay to exit...");
       wrefresh(__Window__.terminal);
-      sleep(1);
+      screen_destroy();
+      shmdt(__Shm_game__);
       exit(1);
     }
-
-    //
-
-    sem_wait(&(__Shm_game__->Players[__index__].sem_print_map));
 
     clear_map(&__Window__);
     render_map(__Shm_game__->Players + __index__);
