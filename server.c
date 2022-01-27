@@ -30,6 +30,7 @@ int main(){
   __Shm_game__ = (Shm_game_t *)shmat(shm_id, NULL, 0);
   __Shm_game__->round = 0;
   __Shm_game__->server_pid = getpid();
+  __Shm_game__->winner_num = -1;
 
   //init game
   screen_init();
@@ -106,12 +107,19 @@ void * execute_action(void * arg){
 
     refresh_server();
 
+    
+
     for(int i = 0; i < PLAYERS_MAX; i++){
       if(__Shm_game__->Players[i].pid > 0 ){
         send_map_to_player(&(__Shm_game__->Players[i]));
         sem_post(&(__Shm_game__->Players[i].sem_print_map));
         
       }
+    }
+
+    winner();
+    if(__Shm_game__->winner_num != -1){
+      return end_game(__Shm_game__->winner_num, __Window__.board);
     }
     
     usleep(200000);

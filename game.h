@@ -95,9 +95,10 @@ typedef struct{
   int round;
   pid_t server_pid;
   Coordinates_t camp_coords;
+  int winner_num;
 } Shm_game_t;
 
-
+void * end_game(int winner_num, WINDOW * board);
 
 
 #endif

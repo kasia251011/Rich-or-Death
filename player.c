@@ -84,5 +84,9 @@ void * show_map(void * arg){
 
     clear_map(&__Window__);
     render_map(__Shm_game__->Players + __index__);
+   
+    if(__Shm_game__->winner_num != -1){
+      return end_game(__Shm_game__->winner_num,__Window__.board);
+    }
   }
 }

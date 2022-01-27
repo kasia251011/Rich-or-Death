@@ -107,11 +107,15 @@ void refresh_server(){
     }
 
     if(__Shm_game__->Players[i].pid != NO_PROCESS){
-      mvwprintw(__Window__.stats, 11, 13+ x, "%d", __Shm_game__->Players[i].coins_found);
+      mvwprintw(__Window__.stats, 11, 13+ x, "%d     ", __Shm_game__->Players[i].coins_found);
+    }else{
+      mvwprintw(__Window__.stats, 11, 13+ x, "-     ");
     }
 
     if(__Shm_game__->Players[i].pid != NO_PROCESS){
-      mvwprintw(__Window__.stats, 12, 13+ x, "%d", __Shm_game__->Players[i].coins_brought);
+      mvwprintw(__Window__.stats, 12, 13+ x, "%d    ", __Shm_game__->Players[i].coins_brought);
+    }else{
+      mvwprintw(__Window__.stats, 12, 13+ x, "-     ");
     }
 
   }
@@ -340,9 +344,6 @@ void * beast_select_move(void * arg){
   Beast_t * Beast = (Beast_t *)arg;
   Direction_t dir;
 
-  mvwprintw(__Window__.terminal, 1, 1, "%d %d %d %d", KEY_LEFT, KEY_RIGHT, KEY_DOWN, KEY_UP);
-  wrefresh(__Window__.terminal);
-
   while(1){
     dir = chase(Beast);
     if(dir == -1){
@@ -385,11 +386,12 @@ void beast_move(Beast_t * Beast, int y, int x){
         player = &__Shm_game__->Players[i];
       }
     }
+
+    
     
     __dropped_treasure__[Beast->coords.y + y][Beast->coords.x + x] = player->coins_found;
     __board_str__[Beast->coords.y + y][Beast->coords.x + x] = player->block_before;
 
-   // __board_str__[player->coords.y][Player->coords.x] = Player->block_before;
     player->coins_found = 0;
     player->deaths ++;
     player->coords.y = player->coords_spawn.y;
@@ -453,4 +455,12 @@ int chase(Beast_t * Beast){
   }
 
   return -1;
+}
+
+void winner(){
+  for(int i = 0; i < PLAYERS_MAX; i++){
+    if(__Shm_game__->Players[i].coins_brought >= 1000){
+      __Shm_game__->winner_num = i + 1;
+    }
+  }
 }

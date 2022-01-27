@@ -95,4 +95,27 @@ void blocks_init(Blocks_t * blocks){
 }
 
 
+void * end_game(int winner_num, WINDOW * board){
+  Blocks_t Blocks;
+  blocks_init(&Blocks);
 
+
+  for(int i = 0; i < 20; i++){
+    mvwaddch(board, 9,  15 + i, Blocks.Path);
+    mvwaddch(board, 13, 15 + i, Blocks.Path);
+    mvwaddch(board, 10, 15 + i, Blocks.Wall);
+    mvwaddch(board, 11, 15 + i, Blocks.Wall);
+    mvwaddch(board, 12, 15 + i, Blocks.Wall);
+  }
+
+  for(int i = 0; i < 3; i++){
+    mvwaddch(board, 10 + i, 15, Blocks.Path);
+    mvwaddch(board, 10 + i, 34, Blocks.Path);
+  }
+
+  mvwprintw(board, 11, 18, "PLAYER  %d  WIN", winner_num);
+  wrefresh(board);
+  
+
+  return NULL;
+}

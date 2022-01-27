@@ -21,6 +21,7 @@ void select_action_player(Player_t *);
 
 //server actions
 void add_coin(char type);
+void winner();
 
 //player actions
 void player_move(Player_t *, int y, int x);
@@ -34,5 +35,7 @@ void * beast_select_move(void *);
 void beast_move(Beast_t *, int y, int x);
 void push_beasts();
 int chase(Beast_t *);
+
+
 
 #endif

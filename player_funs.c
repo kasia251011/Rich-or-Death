@@ -53,8 +53,8 @@ void render_map(Player_t * Player){
   mvwprintw(__Window__.stats, 7, 2, "Curr X/Y       %02d/%02d", Player->coords.x, Player->coords.y);
   mvwprintw(__Window__.stats, 8, 2, "Deaths         %d", Player->deaths);
 
-  mvwprintw(__Window__.stats, 11, 2,"Coins found    %d", Player->coins_found);
-  mvwprintw(__Window__.stats, 12, 2,"Coins brought  %d", Player->coins_brought);
+  mvwprintw(__Window__.stats, 11, 2,"Coins found    %d      ", Player->coins_found);
+  mvwprintw(__Window__.stats, 12, 2,"Coins brought  %d      ", Player->coins_brought);
 
   wrefresh(__Window__.stats);
 
