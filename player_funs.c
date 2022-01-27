@@ -23,7 +23,6 @@ void render_map(Player_t * Player){
         case 'c': block = Blocks.OneCoin; break;
         case 't': block = Blocks.Treasue; break;
         case 'T': block = Blocks.Large_Treasure; break;
-        case 'D': block = Blocks.Dropped_Treasure; break;
         case '*': block = Blocks.Beast; break;
         case '1': block = Blocks.Players[0]; break;
         case '2': block = Blocks.Players[1]; break;
@@ -32,6 +31,10 @@ void render_map(Player_t * Player){
         default:
           block = Blocks.Bushes;
           break;
+      }
+
+      if(Player->dropped[i][j] > 0){
+        block = Blocks.Dropped_Treasure;
       }
 
       mvwaddch(__Window__.board, Player->coords.y + i - 2, Player->coords.x + j - 2, block);

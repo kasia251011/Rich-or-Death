@@ -1,0 +1,339 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.2.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2016 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Thu Jan 27 11:00:03 2022
+
+# Variables
+
+# 'override' directive
+GNUMAKEFLAGS := 
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+DESKTOP_SESSION = ubuntu
+# default
+.SHELLFLAGS := -c
+# environment
+XDG_SESSION_CLASS = user
+# environment
+XDG_SESSION_TYPE = x11
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# environment
+IM_CONFIG_PHASE = 1
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+XAUTHORITY = /run/user/1000/gdm/Xauthority
+# environment
+GDMSESSION = ubuntu
+# environment
+XMODIFIERS = @im=ibus
+# makefile
+CURDIR := /home/kasia/Pulpit/projekt 3/Rich-or-Death
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"pl","availableLanguages":{"*":"pl"},"_languagePackId":"11d146b7e5e860fed802e0f9b13f69b4.pl","_translationsConfigFile":"/home/kasia/.config/Code/clp/11d146b7e5e860fed802e0f9b13f69b4.pl/tcf.json","_cacheRoot":"/home/kasia/.config/Code/clp/11d146b7e5e860fed802e0f9b13f69b4.pl","_resolvedLanguagePackCoreLocation":"/home/kasia/.config/Code/clp/11d146b7e5e860fed802e0f9b13f69b4.pl/899d46d82c4c95423fb7e10e68eba52050e30ba3","_corruptedFile":"/home/kasia/.config/Code/clp/11d146b7e5e860fed802e0f9b13f69b4.pl/corrupted.info","_languagePackSupport":true}
+# environment
+_ = /usr/share/code/code
+# environment
+JOURNAL_STREAM = 8:29807
+# environment
+XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
+# makefile (from 'makefile', line 1)
+MAKEFILE_LIST :=  makefile
+# automatic
+@F = $(notdir $@)
+# environment
+GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
+# environment
+USERNAME = kasia
+# environment
+XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+MANAGERPID = 959
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# environment
+VSCODE_CWD = /home/kasia
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+# environment
+GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
+# environment
+SESSION_MANAGER = local/kasia-VirtualBox:@/tmp/.ICE-unix/1240,unix/kasia-VirtualBox:/tmp/.ICE-unix/1240
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# environment
+XDG_MENU_PREFIX = gnome-
+# environment
+VSCODE_LOG_STACK = false
+# environment
+VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=bcaeef75-ae88-4d6d-92d6-94e1cac163c2&iid=bcaeef75-ae88-4d6d-92d6-94e1cac163c2&sid=bcaeef75-ae88-4d6d-92d6-94e1cac163c2","uploadToServer":true}
+# environment
+INVOCATION_ID = 97883ec4b2a548079c0f0b4b511156f0
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+LS_COLORS = 
+# environment
+XDG_SESSION_DESKTOP = ubuntu
+# environment
+SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
+# environment
+GIO_LAUNCHED_DESKTOP_FILE_PID = 1925
+# automatic
+%F = $(notdir $%)
+# environment
+DISPLAY = :0
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /home/kasia/Pulpit/projekt 3/Rich-or-Death
+# default
+.LOADED := 
+# environment
+SSH_AGENT_PID = 1188
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
+# environment
+GTK_MODULES = gail:atk-bridge
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/services/extensions/node/extensionHostProcess
+# environment
+HOME = /home/kasia
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# environment
+VSCODE_CODE_CACHE_PATH = /home/kasia/.config/Code/CachedData/899d46d82c4c95423fb7e10e68eba52050e30ba3
+# environment
+LOGNAME = kasia
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# environment
+GNOME_DESKTOP_SESSION_ID = this-is-deprecated
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+QT_IM_MODULE = ibus
+# environment
+SHLVL = 0
+# environment
+GNOME_SHELL_SESSION_MODE = ubuntu
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-306bad41-665a-4e91-9c3c-4c051389797b.sock
+# default
+MAKE_VERSION := 4.2.1
+# environment
+USER = kasia
+# makefile
+.DEFAULT_GOAL := all
+# environment
+XDG_CURRENT_DESKTOP = Unity
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-564c8895-1.63.2-main.sock
+# makefile
+MAKEFLAGS = pqrR
+# environment
+MFLAGS = -pqrR
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+BREAKPAD_DUMP_LOCATION = /home/kasia/.config/Code/exthost Crash Reports
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+GDK_BACKEND = x11
+# automatic
++F = $(notdir $+)
+# environment
+QT_ACCESSIBILITY = 1
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+LC_ALL = C
+# environment
+GJS_DEBUG_TOPICS = JS ERROR;JS LOG
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# environment
+WINDOWPATH = 2
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# environment
+GJS_DEBUG_OUTPUT = stderr
+# default
+.RECIPEPREFIX := 
+# environment
+LANG = C
+# environment
+VSCODE_PID = 1925
+# variable set hash-table stats:
+# Load=99/1024=10%, Rehash=0, Collisions=14/124=11%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 2053, inode 700558): 18 files, no impossibilities.
+
+# 18 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+game.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-26 21:45:50.362151324
+#  File has been updated.
+#  Successfully updated.
+
+all: server player
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+game.h:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-26 21:19:57.666292559
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+player.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-26 21:58:07.917209373
+#  File has been updated.
+#  Successfully updated.
+
+server: server.c server_funs.c server_funs.h game.c game.h
+#  Implicit rule search has not been done.
+#  Last modified 2022-01-27 00:53:05.02451922
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'makefile', line 4):
+	gcc server.c game.c server_funs.c -pthread -o server -lncurses
+
+# Not a target:
+player_funs.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-26 23:01:20.873032815
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-25 12:30:07.035
+#  File has been updated.
+#  Successfully updated.
+
+ 
+# Not a target:
+player_funs.h:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-26 21:38:21.503495719
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+server_funs.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-27 00:51:41.310811419
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+server.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-27 00:27:47.19495928
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+server_funs.h:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-26 22:16:48.871925509
+#  File has been updated.
+#  Successfully updated.
+
+player: game.c game.h player.c player_funs.c player_funs.h
+#  Implicit rule search has not been done.
+#  Last modified 2022-01-26 23:10:48.484019736
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'makefile', line 7):
+	gcc game.c player.c player_funs.c -pthread -o player -lncurses
+
+# files hash-table stats:
+# Load=14/1024=1%, Rehash=0, Collisions=3/39=8%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 23 / storage = 215 B / avg = 9 B
+# current buf: size = 8162 B / used = 215 B / count = 23 / avg = 9 B
+
+# strcache performance: lookups = 45 / hit rate = 48%
+# hash-table stats:
+# Load=23/8192=0%, Rehash=0, Collisions=1/45=2%
+# Finished Make data base on Thu Jan 27 11:00:03 2022
+
+ 

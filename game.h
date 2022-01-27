@@ -72,6 +72,7 @@ typedef struct {
   Coordinates_t coords;
   int action_id;
   char view[5][5];
+  char dropped[5][5];
   int deaths;
   int number;
   int coins_found;

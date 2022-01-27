@@ -33,6 +33,12 @@ int load_board(){
 void board_init(){
   load_board();
   //campasite
+  for (int i = 0; i < BOARD_HEIGHT; ++i){
+    for (int j = 0; j < BOARD_WIDTH; ++j){
+      __dropped_treasure__[i][j] = 0;
+    }
+  }
+
   random_filed(&(__Shm_game__->camp_coords));
   __board_str__[__Shm_game__->camp_coords.y][__Shm_game__->camp_coords.x] = 'A';
 }
@@ -51,7 +57,6 @@ void refresh_server(){
         case 'c': block = __Blocks__.OneCoin; break;
         case 't': block = __Blocks__.Treasue; break;
         case 'T': block = __Blocks__.Large_Treasure; break;
-        case 'D': block = __Blocks__.Dropped_Treasure; break;
         case '*': block = __Blocks__.Beast; break;
         case '1': block = __Blocks__.Players[0]; break;
         case '2': block = __Blocks__.Players[1]; break;
@@ -61,11 +66,17 @@ void refresh_server(){
           break;
       }
 
+      if(__dropped_treasure__[i][j] > 0){
+        block = __Blocks__.Dropped_Treasure;
+      }
+
       mvwaddch(__Window__.board, i, j, block);
 
       if(__board_str__[i][j] == 'A'){
         mvwprintw(__Window__.stats, 2, 1, " Campasite X/Y: %02d/%02d", j, i);
       }
+
+      
     }
   }
 
@@ -175,7 +186,6 @@ void select_action_player(Player_t * Player){
   }
 }
 
-
 void player_move(Player_t * Player, int y, int x){
   int way = 1;
   int second_player_number;
@@ -186,12 +196,16 @@ void player_move(Player_t * Player, int y, int x){
   case 'c': Player->coins_found ++; way = 0; break;
   case 't': Player->coins_found += 10; way = 0; break;
   case 'T': Player->coins_found += 50; way = 0; break;
-  case 'D': Player->coins_found += __dropped_treasure__[Player->coords.y + y][Player->coords.x + x]; way = 0;break;
   case '*':
-    __board_str__[Player->coords.y + y][Player->coords.x + x] = 'D';
     __dropped_treasure__[Player->coords.y + y][Player->coords.x + x] = Player->coins_found;
+    __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
+    
     Player->coords.y = Player->coords_spawn.y;
     Player->coords.x = Player->coords_spawn.x;
+    
+    x = 0;
+    y = 0;
+
     Player->coins_found = 0;
     Player->deaths++;
     return;
@@ -213,12 +227,9 @@ void player_move(Player_t * Player, int y, int x){
         second_player = &__Shm_game__->Players[i];
       }
     }
-
-    //średni warunek, mocno średni
-    if(Player->in_bushes == 1 || second_player->in_bushes == 1)break;
     
     __dropped_treasure__[Player->coords.y + y][Player->coords.x + x] = Player->coins_found + second_player->coins_found;
-    __board_str__[Player->coords.y + y][Player->coords.x + x] = 'D';
+    __board_str__[Player->coords.y + y][Player->coords.x + x] = second_player->block_before;
 
     __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
     Player->coins_found = 0;
@@ -241,6 +252,11 @@ void player_move(Player_t * Player, int y, int x){
     break;
   }
 
+  if(__dropped_treasure__[Player->coords.y + y][Player->coords.x + x] > 0){
+    Player->coins_found += __dropped_treasure__[Player->coords.y + y][Player->coords.x + x]; 
+    __dropped_treasure__[Player->coords.y + y][Player->coords.x + x] = 0;
+  }
+
   //path
   
   __board_str__[Player->coords.y][Player->coords.x] = Player->block_before;
@@ -253,6 +269,7 @@ void player_move(Player_t * Player, int y, int x){
   Player->coords.y += y;
 
   __board_str__[Player->coords.y][Player->coords.x] = Player->icon;
+
 
 }
 
@@ -301,10 +318,10 @@ void send_map_to_player(Player_t * Player){
   for(int i = Player->coords.y - 2, k = 0; k < MAP_HEIGHT; i++, k++){
     for(int j = Player->coords.x - 2, d = 0; d < MAP_WIDTH; j++, d++){
       Player->view[k][d] = __board_str__[i][j];
+      Player->dropped[k][d] = __dropped_treasure__[i][j];
     }
   }
 }
-
 
 void beast_init(){
   if(__beast_counter__ == 4) return;
@@ -339,16 +356,37 @@ void * beast_select_move(void * arg){
 }
 
 void beast_move(Beast_t * Beast, int y, int x){
+  int player_number;
+
   switch (__board_str__[Beast->coords.y + y][Beast->coords.x + x] ){
   case '|':
   case '#': 
   case '*':
+  case 'A':
     return;
   case '1':
   case '2':
   case '3':
   case '4':
-    //kill
+    player_number =  __board_str__[Beast->coords.y + y][Beast->coords.x + x] - '0';
+
+    Player_t * player;
+
+    for(int i = 0; i < PLAYERS_MAX; i++){
+      if(player_number == __Shm_game__->Players[i].number){
+        player = &__Shm_game__->Players[i];
+      }
+    }
+    
+    __dropped_treasure__[Beast->coords.y + y][Beast->coords.x + x] = player->coins_found;
+    __board_str__[Beast->coords.y + y][Beast->coords.x + x] = player->block_before;
+
+   // __board_str__[player->coords.y][Player->coords.x] = Player->block_before;
+    player->coins_found = 0;
+    player->deaths ++;
+    player->coords.y = player->coords_spawn.y;
+    player->coords.x = player->coords_spawn.x;
+    
     break;
   default:
     break;

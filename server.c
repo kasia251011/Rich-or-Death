@@ -108,8 +108,7 @@ void * execute_action(void * arg){
       }
     }
     
-    
-    usleep(500000);
+    usleep(200000);
     __Shm_game__->round++;
   }
   
